@@ -30,8 +30,8 @@ public class FTPManager {
     private FTPClient myClient = null;
 
     public FTPManager(){
-//        downloadDirectory = Environment.getExternalStorageDirectory();
-        downloadDirectory = new File("/sdcard/acFactor.txt");
+        downloadDirectory = Environment.getExternalStorageDirectory();
+//        downloadDirectory = new File("/sdcard/");
         Log.d(TAG, "Constructor set download directory to: " + downloadDirectory.toString());
     }
 
@@ -105,14 +105,15 @@ public class FTPManager {
         }
     }
 
-    public boolean downloadFile(String file){
-        File parent = downloadDirectory.getParentFile();
-        if(parent!=null)parent.mkdir();
+    public boolean downloadFile(String file, String extension){
+        File fileDirectory = new File(downloadDirectory.toString() + "/ACFactor/");
+        fileDirectory.mkdirs();
+        File destinationFile = new File(fileDirectory, file + "." + extension);
 
         OutputStream out = null;
 
         try {
-            out = new BufferedOutputStream(new FileOutputStream(downloadDirectory));
+            out = new BufferedOutputStream(new FileOutputStream(destinationFile));
             myClient.setFileType(FTP.BINARY_FILE_TYPE);
             Log.d(TAG, "Try to download " + workingDirectory + file);
             return myClient.retrieveFile(workingDirectory + file, out);

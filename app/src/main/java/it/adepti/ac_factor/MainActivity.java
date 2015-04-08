@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
 //                        "dukcivosne70",
 //                        FTPManager.PASSIVE_MODE);
 //                myManager.setWorkingDirectory("/080415/");
-//                myManager.downloadFile("Text_080415");
+//                myManager.downloadFile("Text_080415", "txt");
 //                return null;
 //            }
 //        };
