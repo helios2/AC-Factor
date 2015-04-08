@@ -34,13 +34,9 @@ public class FTPManager {
 
     public FTPManager(){
         downloadDirectory = new File(Environment.getExternalStorageDirectory().toString(), "/ACFactor/");
-//        downloadDirectory = Environment.getExternalStorageDirectory();
-//        File subDirectory = new File(downloadDirectory.toString(), "/ACFactor/");
         if(!downloadDirectory.exists())downloadDirectory.mkdirs();
         Log.d(TAG, "Constructor set download directory to: " + downloadDirectory.toString());
     }
-
-
 
 /**
      * Connection to a remote ftp host
@@ -52,9 +48,6 @@ public class FTPManager {
 
 
     public void connectWithFTP(String host, String user, String pass, int mode){
-        Log.d(TAG, "Try to connect with " + host);
-        boolean status;
-
         myClient = new FTPClient();
         myClient.setConnectTimeout(10*1000);
         myClient.setDefaultPort(21);
@@ -77,9 +70,8 @@ public class FTPManager {
                     break;
             }
 
-            status = myClient.login(user, pass);
+            boolean status = myClient.login(user, pass);
             if (status){
-                Log.d(TAG, "Log in success");
                 Log.d(TAG, myClient.getReplyString());
                 myClient.setFileType(FTP.BINARY_FILE_TYPE);
                 workingDirectory = myClient.printWorkingDirectory();
@@ -161,6 +153,10 @@ public class FTPManager {
 
     public File getDownloadDirectory() {
         return downloadDirectory;
+    }
+
+    public boolean isConnected(){
+        return myClient.isConnected();
     }
 }
 
