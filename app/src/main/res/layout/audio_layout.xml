@@ -5,15 +5,18 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:background="#eaecee"
-    android:theme="@style/Theme.Acfactortheme">
+    android:theme="@style/Theme.Acfactortheme"
+    android:weightSum="1">
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="@string/hello_world"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#ff222222" />
+    <MediaController
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/audioController"
+        android:layout_gravity="center" />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/audio_view"></View>
 
 </LinearLayout>
