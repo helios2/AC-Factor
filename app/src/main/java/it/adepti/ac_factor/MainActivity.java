@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 
+    // Fragment per i tab
     private FragmentTabHost mTabHost;
 
     @Override
@@ -17,11 +18,12 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /** Tab settings */
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
-        mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator(buildTabLayout(getResources().getString(R.string.tab_testo))), FragmentTab.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator(buildTabLayout(getResources().getString(R.string.tab_multi))), FragmentTab.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("tab_txt").setIndicator(buildTabLayout(getResources().getString(R.string.tab_testo))), Text.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("tab_multi").setIndicator(buildTabLayout(getResources().getString(R.string.tab_multi))), Multimedia.class, null);
 
     }
 
