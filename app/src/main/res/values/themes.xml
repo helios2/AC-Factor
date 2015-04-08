@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- the theme applied to the application or activity -->
+    <style name="ACFactorTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ACFactorActionBar</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="ACFactorActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@color/action_bar_background_color</item>
+        <item name="android:titleTextStyle">@style/ACFactorTitleText</item>
+    </style>
+
+    <!-- Action bar title style -->
+    <style name="ACFactorTitleText" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/action_bar_text_color</item>
+    </style>
+
+</resources>
