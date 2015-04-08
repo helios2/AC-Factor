@@ -1,67 +1,55 @@
 package it.adepti.ac_factor;
 
-import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTabHost;
+
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
-import it.adepti.ac_factor.ftp.FTPManager;
+public class MainActivity extends FragmentActivity {
 
+    // Fragment per i tab
+    private FragmentTabHost mTabHost;
 
-public class MainActivity extends ActionBarActivity {
-
-    private FTPManager myManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /** Tab settings */
+        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
-//        AsyncTask connectTask = new AsyncTask(){
-//            @Override
-//            protected Object doInBackground(Object[] params) {
-//                Log.d("FTPManager", "doInBackground");
-//                myManager = new FTPManager();
-//                myManager.connectWithFTP("ftp.androidprova.altervista.org",
-//                        "androidprova",
-//                        "dukcivosne70",
-//                        FTPManager.PASSIVE_MODE);
-//                myManager.setWorkingDirectory("/080415/");
-//                myManager.downloadFile("Text_080415", "txt");
-//                return null;
-//            }
-//        };
-//
-//        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
-//            connectTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//        else
-//            connectTask.execute();
+        mTabHost.addTab(mTabHost.newTabSpec("tab_txt").setIndicator(buildTabLayout(getResources().getString(R.string.tab_testo))), Text.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("tab_multi").setIndicator(buildTabLayout(getResources().getString(R.string.tab_multi))), Multimedia.class, null);
+
     }
 
+    private View buildTabLayout(String tag) {
+        View tab = getLayoutInflater().inflate(R.layout.tab_layout, null);
+        TextView tv = (TextView) tab.findViewById(R.id.tab_layout_tv);
+        tv.setText(tag);
+        return tab;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(item.getItemId()) {
+            case R.id.action_exit:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }

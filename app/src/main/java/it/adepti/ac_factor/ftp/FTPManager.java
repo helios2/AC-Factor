@@ -1,3 +1,4 @@
+/*
 package it.adepti.ac_factor.ftp;
 
 import android.os.Environment;
@@ -35,13 +36,15 @@ public class FTPManager {
         Log.d(TAG, "Constructor set download directory to: " + downloadDirectory.toString());
     }
 
-    /**
+    */
+/**
      * Connection to a remote ftp host
      * @param host   String address of remote host
      * @param user   String Username
      * @param pass   String Password
      * @param mode   Mode of connection - Use ACTIVE_MODE or PASSIVE_MODE
-     */
+     *//*
+
     public void connectWithFTP(String host, String user, String pass, int mode){
         Log.d(TAG, "Try to connect with " + host);
         boolean status;
@@ -83,18 +86,22 @@ public class FTPManager {
         }
     }
 
-    /**
+    */
+/**
      * Return current working directory on FTP server
      * @return
-     */
+     *//*
+
     public String getWorkingDirectory() {
         return workingDirectory;
     }
 
-    /**
+    */
+/**
      * Set working directory on FTP server
      * @param workingDirectory String that shows current directory
-     */
+     *//*
+
     public void setWorkingDirectory(String workingDirectory) {
         try {
             myClient.changeWorkingDirectory(workingDirectory);
@@ -131,3 +138,4 @@ public class FTPManager {
         return false;
     }
 }
+*/
