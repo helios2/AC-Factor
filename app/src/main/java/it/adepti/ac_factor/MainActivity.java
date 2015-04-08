@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import it.adepti.ac_factor.fragment.Testo;
+import it.adepti.ac_factor.fragment.Video;
+
 public class MainActivity extends FragmentActivity {
 
     // Fragment per i tab
@@ -24,8 +27,9 @@ public class MainActivity extends FragmentActivity {
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
-        mTabHost.addTab(mTabHost.newTabSpec("tab_txt").setIndicator(buildTabLayout(getResources().getString(R.string.tab_testo))), Text.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("tab_multi").setIndicator(buildTabLayout(getResources().getString(R.string.tab_multi))), Multimedia.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("tab_txt").setIndicator(buildTabLayout(getResources().getString(R.string.tab_testo))), Testo.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("tab_video").setIndicator(buildTabLayout(getResources().getString(R.string.tab_video))), Video.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("tab_audio").setIndicator(buildTabLayout(getResources().getString(R.string.tab_audio))), Video.class, null);
 
     }
 

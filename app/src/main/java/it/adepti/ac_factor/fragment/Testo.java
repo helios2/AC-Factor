@@ -1,15 +1,18 @@
-package it.adepti.ac_factor;
+package it.adepti.ac_factor.fragment;
 
-import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
+import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.ftp.FTPManager;
 
-public class Text extends FragmentTab {
+public class Testo extends Fragment {
 
+    // FTP Manager
     private FTPManager myManager;
 
     @Override
@@ -35,5 +38,14 @@ public class Text extends FragmentTab {
 //            connectTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //        else
 //            connectTask.execute();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.text_layout, container, false);
+        TextView tv = (TextView) v.findViewById(R.id.text);
+        //tv.setText(this.getTag() + " Content");
+        return v;
     }
 }

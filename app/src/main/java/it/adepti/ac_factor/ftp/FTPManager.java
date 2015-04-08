@@ -1,4 +1,3 @@
-
 package it.adepti.ac_factor.ftp;
 
 import android.os.Environment;
@@ -44,8 +43,7 @@ public class FTPManager {
      * @param user   String Username
      * @param pass   String Password
      * @param mode   Mode of connection - Use ACTIVE_MODE or PASSIVE_MODE
-     *//*
-*/
+     */
 
 
     public void connectWithFTP(String host, String user, String pass, int mode){
