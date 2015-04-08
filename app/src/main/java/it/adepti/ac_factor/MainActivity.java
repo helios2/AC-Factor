@@ -1,5 +1,7 @@
 package it.adepti.ac_factor;
 
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
@@ -10,19 +12,36 @@ import android.view.View;
 import android.widget.TextView;
 
 import it.adepti.ac_factor.fragment.Audio;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Calendar;
+
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
+import it.adepti.ac_factor.ftp.FTPManager;
+import it.adepti.ac_factor.utils.StringUtils;
 
 public class MainActivity extends FragmentActivity {
 
     // Fragment per i tab
     private FragmentTabHost mTabHost;
 
+    // FTP Manager
+    private FTPManager myManager;
+
+    private StringBuilder text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
+            connectTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        else
+            connectTask.execute();
 
         /** Tab settings */
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
@@ -57,4 +76,63 @@ public class MainActivity extends FragmentActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public FTPManager getMyManager() {
+        return myManager;
+    }
+
+    public AsyncTask getConnectTask() {
+        return connectTask;
+    }
+
+    public StringBuilder getStringBuilderText() {
+        return text;
+    }
+
+    /** FTP Setting Up */
+    AsyncTask connectTask = new AsyncTask(){
+        @Override
+        protected void onPreExecute() {
+            myManager = new FTPManager();
+        }
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            myManager.connectWithFTP("ftp.androidprova.altervista.org",
+                    "androidprova",
+                    "dukcivosne70",
+                    FTPManager.PASSIVE_MODE);
+
+            Calendar nowDate = Calendar.getInstance();
+            myManager.setWorkingDirectory("/" + StringUtils.dateToString(nowDate));
+            myManager.setDownloadDirectoryToTodayDirectory();
+            myManager.downloadFile("Text_080415", "txt");
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            Calendar nowDate = Calendar.getInstance();
+            File readFile = new File(myManager.getDownloadDirectory().toString(),
+                    StringUtils.dateToString(nowDate) + ".txt");
+
+            text = new StringBuilder();
+
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(readFile));
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    text.append(line);
+                    text.append('\n');
+                }
+                br.close();
+            }
+            catch (IOException e) {
+                //You'll need to add proper error handling here
+            }
+            super.onPostExecute(o);
+        }
+    };
 }

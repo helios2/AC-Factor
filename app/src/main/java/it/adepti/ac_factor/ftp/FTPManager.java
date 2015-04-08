@@ -12,6 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.util.Calendar;
+
+import it.adepti.ac_factor.utils.StringUtils;
 
 public class FTPManager {
 
@@ -30,8 +33,10 @@ public class FTPManager {
     private FTPClient myClient = null;
 
     public FTPManager(){
-        downloadDirectory = Environment.getExternalStorageDirectory();
-//        downloadDirectory = new File("/sdcard/");
+        downloadDirectory = new File(Environment.getExternalStorageDirectory().toString(), "/ACFactor/");
+//        downloadDirectory = Environment.getExternalStorageDirectory();
+//        File subDirectory = new File(downloadDirectory.toString(), "/ACFactor/");
+        if(!downloadDirectory.exists())downloadDirectory.mkdirs();
         Log.d(TAG, "Constructor set download directory to: " + downloadDirectory.toString());
     }
 
@@ -78,7 +83,7 @@ public class FTPManager {
                 Log.d(TAG, myClient.getReplyString());
                 myClient.setFileType(FTP.BINARY_FILE_TYPE);
                 workingDirectory = myClient.printWorkingDirectory();
-                Log.d(TAG, "Working Directory Setted: " + workingDirectory);
+                Log.d(TAG, "Connect - Working Directory Setted: " + workingDirectory);
             }else{
                 Log.d(TAG, "Log in failed");
             }
@@ -107,16 +112,31 @@ public class FTPManager {
         try {
             myClient.changeWorkingDirectory(workingDirectory);
             this.workingDirectory = workingDirectory;
-            Log.d(TAG, "Working Directory Setted: " + this.workingDirectory);
+            Log.d(TAG, "Set - Working Directory Setted: " + this.workingDirectory);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public boolean setDownloadDirectoryToTodayDirectory(){
+        boolean created;
+        Calendar nowDate = Calendar.getInstance();
+        String dataDirectoryName = StringUtils.dateToString(nowDate);
+        File todayDirectory = new File(downloadDirectory.toString() + "/" + dataDirectoryName);
+        if (todayDirectory.exists()){
+            created = false;
+        }else {
+            todayDirectory.mkdirs();
+            downloadDirectory = new File(todayDirectory.toString());
+            Log.d(TAG, "Setting today Directory " + this.downloadDirectory);
+            created = true;
+        }
+        return created;
+    }
+
     public boolean downloadFile(String file, String extension){
-        File fileDirectory = new File(downloadDirectory.toString() + "/ACFactor/");
-        fileDirectory.mkdirs();
-        File destinationFile = new File(fileDirectory, file + "." + extension);
+        // Create Directory For Todays Files.
+        File destinationFile = new File(downloadDirectory, file + "." + extension);
 
         OutputStream out = null;
 
@@ -137,6 +157,10 @@ public class FTPManager {
             }
         }
         return false;
+    }
+
+    public File getDownloadDirectory() {
+        return downloadDirectory;
     }
 }
 
