@@ -4,13 +4,22 @@
     android:layout_height="match_parent"
     android:background="@drawable/tab_indicator_ab_acfactortheme">
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="45sp"
+        android:layout_gravity="top" />
+
     <TextView
         android:id="@+id/tab_layout_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:textColor="@color/action_bar_text_color"
-        android:textSize="@dimen/tab_text_size" />
+        android:textColor="@color/action_bar_text_color" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="25px"
+        android:layout_gravity="bottom" />
 
 
 </FrameLayout>

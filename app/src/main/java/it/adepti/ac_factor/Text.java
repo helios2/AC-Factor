@@ -6,11 +6,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import it.adepti.ac_factor.ftp.FTPManager;
+//import it.adepti.ac_factor.ftp.FTPManager;
 
 public class Text extends FragmentTab {
 
-    private FTPManager myManager;
+    //private FTPManager myManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
