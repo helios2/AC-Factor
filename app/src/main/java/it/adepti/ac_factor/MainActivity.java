@@ -3,6 +3,7 @@ package it.adepti.ac_factor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +13,7 @@ public class MainActivity extends FragmentActivity {
 
     // Fragment per i tab
     private FragmentTabHost mTabHost;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
