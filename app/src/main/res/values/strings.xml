@@ -1,6 +1,8 @@
 <resources>
+
+    <!-- Generali -->
     <string name="app_name">The AC Factor</string>
 
-    <string name="hello_world">Hello world!</string>
+
     <string name="action_settings">Settings</string>
 </resources>
