@@ -8,12 +8,6 @@
     android:theme="@style/Theme.Acfactortheme"
     android:weightSum="1">
 
-    <MediaController
-        android:layout_width="36dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/audioController"
-        android:layout_gravity="center" />
-
     <View
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

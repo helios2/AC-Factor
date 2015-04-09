@@ -43,15 +43,26 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
             e.printStackTrace();
             Log.e(TAG,"No audio");
         }
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mediaPlayer.pause();
+    }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        mediaPlayer.start();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.audio_layout, container, false);
+
+        mediaController.setAnchorView(v);
 
         v.setOnTouchListener(new View.OnTouchListener(){
             @Override
