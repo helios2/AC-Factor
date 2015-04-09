@@ -17,7 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/lorem_ipsum"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#ff222222" />
     </ScrollView>

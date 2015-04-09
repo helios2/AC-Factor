@@ -21,6 +21,9 @@ public class FTPManager {
     // Debug
     private final static String TAG = "FTPManager";
 
+    // Singleton Instance
+    public static FTPManager managerInstance = null;
+
     // Mode
     public final static int ACTIVE_MODE = 100;
     public final static int PASSIVE_MODE = 200;
@@ -32,21 +35,43 @@ public class FTPManager {
     // Instance of Apache FTPClient
     private FTPClient myClient = null;
 
-    public FTPManager(){
+    /**
+     * Constructor
+     */
+    private FTPManager(){
         downloadDirectory = new File(Environment.getExternalStorageDirectory().toString(), "/ACFactor/");
         if(!downloadDirectory.exists())downloadDirectory.mkdirs();
         Log.d(TAG, "Constructor set download directory to: " + downloadDirectory.toString());
     }
 
-/**
+    /**
+     * Get Singleton Instance
+     * @return FTPManager singleton instance.
+     */
+    public static FTPManager getManagerInstance(){
+        if(managerInstance == null){
+            managerInstance = new FTPManager();
+        }
+        return managerInstance;
+    }
+
+    /**
+     * Override of clone() method
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
+
+     /**
      * Connection to a remote ftp host
      * @param host   String address of remote host
      * @param user   String Username
      * @param pass   String Password
      * @param mode   Mode of connection - Use ACTIVE_MODE or PASSIVE_MODE
      */
-
-
     public void connectWithFTP(String host, String user, String pass, int mode){
         myClient = new FTPClient();
         myClient.setConnectTimeout(10*1000);
@@ -86,16 +111,15 @@ public class FTPManager {
 
 
 
-/**
+    /**
      * Return current working directory on FTP server
      * @return
      */
-
     public String getWorkingDirectory() {
         return workingDirectory;
     }
 
-/**
+    /**
      * Set working directory on FTP server
      * @param workingDirectory String that shows current directory
      */
