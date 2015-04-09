@@ -28,6 +28,8 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         super.onCreate(savedInstanceState);
 
+        Log.d(TAG,"onCreate called");
+
         // Set up the Media Player
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnPreparedListener(this);
@@ -38,20 +40,33 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         try{
             mediaPlayer.setDataSource(getActivity().getAssets().openFd("mfx/Science.mp3").getFileDescriptor());
             mediaPlayer.prepare();
+            if(savedInstanceState != null)
+                mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
             mediaPlayer.start();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG,"No audio");
+            Log.e(TAG,"No audio found");
         }
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("curr_pos", mediaPlayer.getCurrentPosition());
+    }
 
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        mediaPlayer.pause();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.audio_layout, container, false);
+
+        mediaController.setAnchorView(v);
 
         v.setOnTouchListener(new View.OnTouchListener(){
             @Override
@@ -67,14 +82,14 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     @Override
     public void onPrepared(MediaPlayer mp) {
         mediaController.setMediaPlayer(this);
-        mediaController.setAnchorView(getActivity().findViewById(R.id.audio_view));
+        //mediaController.setAnchorView(getActivity().findViewById(R.id.audio_view));
 
-        handler.post(new Runnable() {
+  /*      handler.post(new Runnable() {
             public void run() {
                 mediaController.setEnabled(true);
                 mediaController.show();
             }
-        });
+        });*/
 
     }
 
