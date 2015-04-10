@@ -10,6 +10,7 @@ public class CheckConnectivity {
     private final String TAG = "CheckConnectivity";
 
     private ConnectivityManager connectivityManager;
+    private NetworkInfo activeNetwork;
 
     private Activity activity;
 
@@ -47,7 +48,15 @@ public class CheckConnectivity {
     public boolean isConnected(){
         connectivityManager = (ConnectivityManager) activity.getSystemService(activity.getApplicationContext().CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    public boolean isWiFi(){
+        return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
+    public boolean isMobile(){
+        return activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
     }
 }
