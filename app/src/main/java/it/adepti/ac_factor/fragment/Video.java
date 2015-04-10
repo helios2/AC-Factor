@@ -91,7 +91,6 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
             });
         } else {
             wifiIcon.setVisibility(View.VISIBLE);
-            vidView.setVisibility(View.INVISIBLE);
         }
 
 
