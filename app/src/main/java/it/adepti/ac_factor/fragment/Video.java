@@ -30,7 +30,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     // Media Controller
     private MediaController mediaController;
 
-    // Check Connectivity
+    // Check connectivity
     private CheckConnectivity checkConnectivity;
 
     // Wi-Fi icon
@@ -46,6 +46,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         // Set up the Media Controller
         mediaController = new MediaController(getActivity());
 
+        // Check Connectivity
         checkConnectivity = new CheckConnectivity(getActivity());
     }
 
@@ -54,12 +55,9 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.video_layout, container, false);
 
-        // Wi-Fi icon find by id
         wifiIcon = (ImageView) v.findViewById(R.id.wifi_video_image_view);
 
         if(checkConnectivity.isConnected()){
-            vidView.setVisibility(View.VISIBLE);
-
             // Anchor mediaController View
             mediaController.setAnchorView(v);
 
@@ -93,7 +91,9 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
             });
         } else {
             wifiIcon.setVisibility(View.VISIBLE);
+            vidView.setVisibility(View.INVISIBLE);
         }
+
 
 
         return v;
