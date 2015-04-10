@@ -4,15 +4,18 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,58 +24,97 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import it.adepti.ac_factor.R;
+import it.adepti.ac_factor.utils.Constants;
+import it.adepti.ac_factor.utils.FilesSupport;
 
 public class Testo extends Fragment {
 
+    // Text field where the downloaded text will appear.
     private TextView mTextView;
-    // declare the dialog as a member field of your activity
+    // Progress bar for trace download.
     ProgressDialog mProgressDialog;
+    // File downloaded on device
+    File downloadedFileOnDevice;
+    // String for today
+    String todayString;
+    // String for URL download
+    String downloadURL;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("LifeCycle", "Fragment onCreate");
         super.onCreate(savedInstanceState);
 
-        // instantiate it within the onCreate method
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage("A message");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
+        // Initialize variables
+        todayString = FilesSupport.dateTodayToString();
 
-        // TODO: Controllo che il file non sia già stato scaricato, altrimenti lo scarico
+        downloadedFileOnDevice = new File(Environment.getExternalStorageDirectory().toString() +
+                Constants.APP_ROOT_FOLDER +
+                "/" + todayString +
+                Constants.TEXT_RESOURCE +
+                todayString +
+                Constants.TEXT_EXTENSION);
 
-        // execute this when the downloader must be fired
-        final DownloadTask downloadTask = new DownloadTask(getActivity());
-        downloadTask.execute("http://androidprova.altervista.org/090415/Text_090415");
-
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                downloadTask.cancel(true);
-            }
-        });
-
-        // TODO: Set di mTextView con il testo scaricato
+        downloadURL = new String(Constants.DOMAIN +
+                                todayString +
+                                Constants.TEXT_RESOURCE +
+                                todayString +
+                                Constants.TEXT_EXTENSION);
 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("LifeCycle", "Fragment onCreateView");
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
+
+        if(!downloadedFileOnDevice.exists()) {
+
+            // Progress dialog for download
+            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
+
+            // execute this when the downloader must be fired
+            final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
+            downloadTextTask.execute(downloadURL);
+            Log.d("Download", "Try to download " + downloadURL);
+
+            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    downloadTextTask.cancel(true);
+                }
+            });
+        }else{
+            mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
+        }
+
         return v;
     }
 
-    // usually, subclasses of AsyncTask are declared inside the activity class.
-    // that way, you can easily modify the UI thread from here
-    private class DownloadTask extends AsyncTask<String, Integer, String> {
+    // Task to download text
+    private class DownloadTextTask extends AsyncTask<String, Integer, String> {
 
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
-        public DownloadTask(Context context) {
+        public DownloadTextTask(Context context) {
             this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // take CPU lock to prevent CPU from going off if the user
+            // presses the power button during download
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+            mWakeLock.acquire();
+            mProgressDialog.show();
         }
 
         @Override
@@ -85,8 +127,7 @@ public class Testo extends Fragment {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
+                // Expect HTTP 200 OK
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                     return "Server returned HTTP " + connection.getResponseCode()
                             + " " + connection.getResponseMessage();
@@ -96,22 +137,22 @@ public class Testo extends Fragment {
                 // might be -1: server did not report the length
                 int fileLength = connection.getContentLength();
 
-                // download the file
+                // Download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/acfactor/Text_090415.txt");
+                output = new FileOutputStream(downloadedFileOnDevice);
 
                 byte data[] = new byte[4096];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
+                    // Allow canceling with back button
                     if (isCancelled()) {
                         input.close();
                         return null;
                     }
                     total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
+                    // Publishing the progress....
+                    if (fileLength > 0) // Only if total length is known
                         publishProgress((int) (total * 100 / fileLength));
                     output.write(data, 0, count);
                 }
@@ -133,21 +174,9 @@ public class Testo extends Fragment {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // take CPU lock to prevent CPU from going off if the user
-            // presses the power button during download
-            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    getClass().getName());
-            mWakeLock.acquire();
-            mProgressDialog.show();
-        }
-
-        @Override
         protected void onProgressUpdate(Integer... progress) {
             super.onProgressUpdate(progress);
-            // if we get here, length is known, now set indeterminate to false
+            // If we get here, length is known, now set indeterminate to false
             mProgressDialog.setIndeterminate(false);
             mProgressDialog.setMax(100);
             mProgressDialog.setProgress(progress[0]);
@@ -157,10 +186,14 @@ public class Testo extends Fragment {
         protected void onPostExecute(String result) {
             mWakeLock.release();
             mProgressDialog.dismiss();
-            if (result != null)
+            if (result != null){
                 Toast.makeText(context, "Download error: " + result, Toast.LENGTH_LONG).show();
-            else
+            }
+            else {
                 Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
+                mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
+            }
+
         }
     }
 }
