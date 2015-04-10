@@ -4,6 +4,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import java.io.IOException;
 
 import it.adepti.ac_factor.R;
+import it.adepti.ac_factor.utils.CheckConnectivity;
 
 public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
 
@@ -29,6 +31,11 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     private String audioAddress;
     private boolean isInternetOn = true; // TODO settarlo ad un valore vero
 
+    // Image View
+    private ImageView audioIcon;
+    private ImageView wifiIcon;
+
+    private CheckConnectivity checkConnectivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,9 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         // Set up the Media Controller
         mediaController = new MediaController(getActivity());
+
+        checkConnectivity = new CheckConnectivity(getActivity());
+
     }
 
     @Override
@@ -64,44 +74,54 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         Log.d("LifeCycle", "Audio onCreateView");
         View v = inflater.inflate(R.layout.audio_layout, container, false);
 
-        // Anchor mediaController to the Fragment's view
-        mediaController.setAnchorView(v);
+        // Wi-Fi and Audio Icons findById
+        audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
+        wifiIcon = (ImageView) v.findViewById(R.id.wifi_audio_image_view);
 
-        v.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mediaController.show();
-                return false;
+        if(checkConnectivity.isInternetOn()){
+            audioIcon.setVisibility(View.VISIBLE);
+            // Anchor mediaController to the Fragment's view
+            mediaController.setAnchorView(v);
+
+            v.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    mediaController.show();
+                    return false;
+                }
+            });
+
+            // Media Player Settings
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            audioAddress = "http://androidprova.altervista.org/100415/Audio_100415.mp3";
+
+            try {
+                mediaPlayer.setDataSource(audioAddress);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
 
-        // Media Player Settings
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        audioAddress = "http://androidprova.altervista.org/100415/Audio_100415.mp3";
-
-        try {
-            mediaPlayer.setDataSource(audioAddress);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            // Media Player prepare and start
+            try {
+                mediaPlayer.prepare();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (savedInstanceState != null)
+                mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
+            mediaPlayer.start();
+        } else {
+            wifiIcon.setVisibility(View.VISIBLE);
         }
 
-        // Media Player prepare and start
-        try {
-            mediaPlayer.prepare();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (savedInstanceState != null)
-            mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
-        mediaPlayer.start();
 
         return v;
     }

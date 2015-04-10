@@ -4,20 +4,22 @@ import android.app.Activity;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
-public class CheckConnectivity extends Activity {
+public class CheckConnectivity {
 
     private final String TAG = "CheckConnectivity";
 
     private ConnectivityManager connectivityManager;
 
-    public CheckConnectivity(){
+    private Activity activity;
 
+    public CheckConnectivity(Activity activity){
+        this.activity = activity;
     }
 
     public final boolean isInternetOn() {
 
         // get Connectivity Manager object to check connection
-        connectivityManager = (ConnectivityManager)getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
+        connectivityManager = (ConnectivityManager)activity.getSystemService(activity.getBaseContext().CONNECTIVITY_SERVICE);
 
         // Check for network connections
         if ( connectivityManager.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTED ||
