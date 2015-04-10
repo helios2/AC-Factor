@@ -1,8 +1,7 @@
 package it.adepti.ac_factor.fragment;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.MediaController;
 import android.support.v4.app.Fragment;
@@ -21,14 +20,13 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     private MediaPlayer mediaPlayer;
     private MediaController mediaController;
-    private Handler handler = new Handler();
+    private String audioAddress;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        Log.d(TAG,"onCreate called");
 
         // Set up the Media Player
         mediaPlayer = new MediaPlayer();
@@ -36,17 +34,6 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         // Set up the Media Controller
         mediaController = new MediaController(getActivity());
-
-        try{
-            mediaPlayer.setDataSource(getActivity().getAssets().openFd("mfx/Science.mp3").getFileDescriptor());
-            mediaPlayer.prepare();
-            if(savedInstanceState != null)
-                mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG,"No audio found");
-        }
     }
 
     @Override
@@ -76,21 +63,37 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
             }
         });
 
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        audioAddress = "http://androidprova.altervista.org/100415/Audio_100415.mp3";
+        try {
+            mediaPlayer.setDataSource(audioAddress);
+
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            mediaPlayer.prepare();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(savedInstanceState != null)
+            mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
+        mediaPlayer.start();
+
         return v;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         mediaController.setMediaPlayer(this);
-        //mediaController.setAnchorView(getActivity().findViewById(R.id.audio_view));
-
-  /*      handler.post(new Runnable() {
-            public void run() {
-                mediaController.setEnabled(true);
-                mediaController.show();
-            }
-        });*/
-
     }
 
     @Override
