@@ -14,16 +14,19 @@ import android.view.ViewGroup;
 import java.io.IOException;
 
 import it.adepti.ac_factor.R;
-import it.adepti.ac_factor.utils.CheckConnectivity;
 
 public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
 
     private static final String TAG = "Audio";
 
+    // Media Player
     private MediaPlayer mediaPlayer;
+
+    // Media Controller
     private MediaController mediaController;
+
+    // Audio URL
     private String audioAddress;
-    private boolean isInternetOn = true; // TODO settarlo ad un valore vero
 
 
     @Override
@@ -41,8 +44,10 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        // Save audio position
         super.onSaveInstanceState(outState);
         outState.putInt("curr_pos", mediaPlayer.getCurrentPosition());
+        Log.d("VideoBug","curr_audio_pos " + mediaPlayer.getCurrentPosition());
     }
 
     @Override
@@ -56,45 +61,44 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.audio_layout, container, false);
 
+        // Anchor mediaController to the Fragment's view
         mediaController.setAnchorView(v);
 
-        if(isInternetOn) {
-            v.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    mediaController.show();
-                    return false;
-                }
-            });
-
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            audioAddress = "http://androidprova.altervista.org/100415/Audio_100415.mp3";
-            try {
-                mediaPlayer.setDataSource(audioAddress);
-
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+        v.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mediaController.show();
+                return false;
             }
+        });
 
-            try {
-                mediaPlayer.prepare();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (savedInstanceState != null)
-                mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
-            mediaPlayer.start();
+        // Media Player Settings
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        audioAddress = "http://androidprova.altervista.org/100415/Audio_100415.mp3";
+
+        try {
+            mediaPlayer.setDataSource(audioAddress);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        else Log.d(TAG,"Turn on internet");
 
+        // Media Player prepare and start
+        try {
+            mediaPlayer.prepare();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (savedInstanceState != null)
+            mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
+        mediaPlayer.start();
 
         return v;
     }

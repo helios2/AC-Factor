@@ -1,5 +1,6 @@
 package it.adepti.ac_factor.fragment;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,20 +12,28 @@ import android.net.Uri;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import java.io.IOException;
-
 import it.adepti.ac_factor.R;
 
 public class Video extends Fragment implements MediaController.MediaPlayerControl {
 
+    private final String TAG = "Video";
+
+    // Video View
     private VideoView vidView;
+
+    // Video address
     private String vidAddress;
     private Uri vidUri;
+
+    // Media Controller
     private MediaController mediaController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Create the video view on the activity
+        vidView = new VideoView(getActivity());
 
         // Set up the Media Controller
         mediaController = new MediaController(getActivity());
@@ -41,11 +50,12 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         // Set Up the Video View
         vidView = (VideoView) v.findViewById(R.id.video_view);
 
+        // Address URI Parsing and Setting
         vidAddress = "http://androidprova.altervista.org/100415/Video_100415.mp4";
         vidUri = Uri.parse(vidAddress);
         vidView.setVideoURI(vidUri);
-        if(savedInstanceState != null)
-            vidView.seekTo(savedInstanceState.getInt("curr_pos"));
+
+        // Video start
         try{
           vidView.start();
         } catch (IllegalArgumentException e) {
@@ -71,8 +81,19 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        // Salva l'ultimo punto in cui si stava visualizzando il video
         super.onSaveInstanceState(outState);
-        outState.putInt("curr_pos", vidView.getCurrentPosition());
+        outState.putInt("video_pos", vidView.getCurrentPosition());
+    }
+
+
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        // Restore dell'ultimo punto in cui si stava visualizzando il video
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null)
+            vidView.seekTo(savedInstanceState.getInt("video_pos"));
     }
 
     @Override
