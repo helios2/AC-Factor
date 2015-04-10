@@ -46,16 +46,19 @@ public class Testo extends Fragment {
     private String downloadURL;
     // Media state
     private String mediaState;
-    // Broadcast receiver
+    // Broadcast Receiver
     private BroadcastReceiver networkStateReceiver;
     // Check Connectivity Manager
-    CheckConnectivity connectivityManager;
+    private CheckConnectivity connectivityManager;
+    // Intent Filter
+    private IntentFilter filter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "Testo onCreate");
         super.onCreate(savedInstanceState);
 
+        this.setRetainInstance(true);
         //-----------------------------------------------------
         // INITIALIZE VARIABLES
         //-----------------------------------------------------
@@ -90,12 +93,12 @@ public class Testo extends Fragment {
         networkStateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.d("Receiver", "Called onReceive");
                 downloadTodayText();
             }
         };
 
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        getActivity().registerReceiver(networkStateReceiver, filter);
+        filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 
     }
 
@@ -106,15 +109,44 @@ public class Testo extends Fragment {
         mTextView = (TextView) v.findViewById(R.id.text);
         Log.d("Media", mediaState);
 
+        if(savedInstanceState != null){
+            downloadedFileOnDevice = new File(savedInstanceState.getString("downloadFile"));
+            downloadURL = savedInstanceState.getString("downloadUrl");
+        }
+
         downloadTodayText();
 
         return v;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(downloadedFileOnDevice != null) outState.putString("downloadFile", downloadedFileOnDevice.toString());
+        if(downloadURL != null) outState.putString("downloadUrl", downloadURL);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(networkStateReceiver);
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        getActivity().registerReceiver(networkStateReceiver,filter);
+        super.onResume();
+    }
+
     private void downloadTodayText() {
-        if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
-            if (!downloadedFileOnDevice.exists()) {
-                if (connectivityManager.isConnected()) {
+        if (!downloadedFileOnDevice.exists()) {
+            if (connectivityManager.isConnected()) {
+                if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
 
                     // Progress dialog for download
                     mProgressDialog = new ProgressDialog(getActivity());
@@ -135,13 +167,13 @@ public class Testo extends Fragment {
                         }
                     });
                 } else {
-                    Toast.makeText(getActivity(), "Non sei connesso alla rete", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Memoria esterna non raggiungibile", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
+                Toast.makeText(getActivity(), "Non sei connesso alla rete", Toast.LENGTH_LONG).show();
             }
         } else {
-            Toast.makeText(getActivity(), "Memoria esterna non raggiungibile", Toast.LENGTH_SHORT).show();
+            mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
         }
     }
 
