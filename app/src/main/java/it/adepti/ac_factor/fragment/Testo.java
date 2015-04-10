@@ -44,7 +44,7 @@ public class Testo extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d("LifeCycle", "Fragment onCreate");
+        Log.d("LifeCycle", "Testo onCreate");
         super.onCreate(savedInstanceState);
 
         //-----------------------------------------------------
@@ -75,7 +75,7 @@ public class Testo extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("LifeCycle", "Fragment onCreateView");
+        Log.d("LifeCycle", "Testo onCreateView");
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
 

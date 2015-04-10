@@ -27,11 +27,12 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     // Audio URL
     private String audioAddress;
+    private boolean isInternetOn = true; // TODO settarlo ad un valore vero
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
+        Log.d("LifeCycle", "Audio onCreate");
         super.onCreate(savedInstanceState);
 
         // Set up the Media Player
@@ -45,6 +46,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // Save audio position
+        Log.d("LifeCycle", "Audio onSavedInstanceState");
         super.onSaveInstanceState(outState);
         outState.putInt("curr_pos", mediaPlayer.getCurrentPosition());
         Log.d("VideoBug","curr_audio_pos " + mediaPlayer.getCurrentPosition());
@@ -52,13 +54,14 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     @Override
     public void onPause() {
+        Log.d("LifeCycle", "Audio onPause");
         super.onPause();
         mediaPlayer.pause();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("LifeCycle", "Audio onCreateView");
         View v = inflater.inflate(R.layout.audio_layout, container, false);
 
         // Anchor mediaController to the Fragment's view
