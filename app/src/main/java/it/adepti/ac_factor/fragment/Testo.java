@@ -39,6 +39,8 @@ public class Testo extends Fragment {
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setCancelable(true);
 
+        // TODO: Controllo che il file non sia già stato scaricato, altrimenti lo scarico
+
         // execute this when the downloader must be fired
         final DownloadTask downloadTask = new DownloadTask(getActivity());
         downloadTask.execute("http://androidprova.altervista.org/090415/Text_090415");
@@ -49,6 +51,8 @@ public class Testo extends Fragment {
                 downloadTask.cancel(true);
             }
         });
+
+        // TODO: Set di mTextView con il testo scaricato
 
     }
 
@@ -94,7 +98,7 @@ public class Testo extends Fragment {
 
                 // download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/Text_090415.txt");
+                output = new FileOutputStream("/sdcard/acfactor/Text_090415.txt");
 
                 byte data[] = new byte[4096];
                 long total = 0;
