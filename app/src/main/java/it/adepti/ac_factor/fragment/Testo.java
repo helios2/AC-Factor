@@ -32,22 +32,32 @@ public class Testo extends Fragment {
     // Text field where the downloaded text will appear.
     private TextView mTextView;
     // Progress bar for trace download.
-    ProgressDialog mProgressDialog;
+    private ProgressDialog mProgressDialog;
     // File downloaded on device
-    File downloadedFileOnDevice;
+    private File downloadedFileOnDevice;
     // String for today
-    String todayString;
+    private String todayString;
     // String for URL download
-    String downloadURL;
+    private String downloadURL;
+    // Media state
+    private String mediaState;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "Fragment onCreate");
         super.onCreate(savedInstanceState);
 
-        // Initialize variables
+        //-----------------------------------------------------
+        // INITIALIZE VARIABLES
+        //-----------------------------------------------------
+
+        // Initialize Media State
+        mediaState = Environment.getExternalStorageState();
+
+        // Initialize todayString in a format ggMMyy
         todayString = FilesSupport.dateTodayToString();
 
+        // Initialize directory in device to put the file. It depends from TodayString
         downloadedFileOnDevice = new File(Environment.getExternalStorageDirectory().toString() +
                 Constants.APP_ROOT_FOLDER +
                 "/" + todayString +
@@ -55,12 +65,12 @@ public class Testo extends Fragment {
                 todayString +
                 Constants.TEXT_EXTENSION);
 
+        // Initialize directory for download the file. It depends from todayString
         downloadURL = new String(Constants.DOMAIN +
                                 todayString +
                                 Constants.TEXT_RESOURCE +
                                 todayString +
                                 Constants.TEXT_EXTENSION);
-
     }
 
     @Override
@@ -69,28 +79,33 @@ public class Testo extends Fragment {
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
 
-        if(!downloadedFileOnDevice.exists()) {
+        Log.d("Media", mediaState);
+        if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
+            if (!downloadedFileOnDevice.exists()) {
 
-            // Progress dialog for download
-            mProgressDialog = new ProgressDialog(getActivity());
-            mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setCancelable(true);
+                // Progress dialog for download
+                mProgressDialog = new ProgressDialog(getActivity());
+                mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setCancelable(true);
 
-            // execute this when the downloader must be fired
-            final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
-            downloadTextTask.execute(downloadURL);
-            Log.d("Download", "Try to download " + downloadURL);
+                // execute this when the downloader must be fired
+                final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
+                downloadTextTask.execute(downloadURL);
+                Log.d("Download", "Try to download " + downloadURL);
 
-            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    downloadTextTask.cancel(true);
-                }
-            });
+                mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        downloadTextTask.cancel(true);
+                    }
+                });
+            } else {
+                mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
+            }
         }else{
-            mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
+            Toast.makeText(getActivity(), "Memoria esterna non raggiungibile", Toast.LENGTH_SHORT).show();
         }
 
         return v;
