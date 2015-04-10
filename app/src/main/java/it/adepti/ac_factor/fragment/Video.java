@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import java.io.IOException;
+
 import it.adepti.ac_factor.R;
 
 public class Video extends Fragment implements MediaController.MediaPlayerControl {
@@ -44,7 +46,15 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         vidView.setVideoURI(vidUri);
         if(savedInstanceState != null)
             vidView.seekTo(savedInstanceState.getInt("curr_pos"));
-        vidView.start();
+        try{
+          vidView.start();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
 
         // Set the media controller for the Video View
         vidView.setMediaController(mediaController);
@@ -55,6 +65,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
                 return false;
             }
         });
+
         return v;
     }
 
