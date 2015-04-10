@@ -2,6 +2,7 @@ package it.adepti.ac_factor.utils;
 
 import android.app.Activity;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 public class CheckConnectivity {
@@ -16,6 +17,7 @@ public class CheckConnectivity {
         this.activity = activity;
     }
 
+    @Deprecated
     public final boolean isInternetOn() {
 
         // get Connectivity Manager object to check connection
@@ -40,5 +42,12 @@ public class CheckConnectivity {
             return false;
         }
         return false;
+    }
+
+    public boolean isConnected(){
+        connectivityManager = (ConnectivityManager) activity.getSystemService(activity.getApplicationContext().CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }

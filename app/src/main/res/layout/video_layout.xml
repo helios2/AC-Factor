@@ -11,5 +11,15 @@
         android:id="@+id/video_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/wifi_video_image_view"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/wifi"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"/>
 </RelativeLayout>

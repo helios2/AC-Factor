@@ -35,6 +35,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     private ImageView audioIcon;
     private ImageView wifiIcon;
 
+    // Check Connectivity
     private CheckConnectivity checkConnectivity;
 
     @Override
@@ -78,7 +79,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
         wifiIcon = (ImageView) v.findViewById(R.id.wifi_audio_image_view);
 
-        if(checkConnectivity.isInternetOn()){
+        if(checkConnectivity.isConnected()){
             audioIcon.setVisibility(View.VISIBLE);
             // Anchor mediaController to the Fragment's view
             mediaController.setAnchorView(v);

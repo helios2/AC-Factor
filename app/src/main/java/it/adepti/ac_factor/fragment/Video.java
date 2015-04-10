@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.net.Uri;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 import it.adepti.ac_factor.R;
+import it.adepti.ac_factor.utils.CheckConnectivity;
 
 public class Video extends Fragment implements MediaController.MediaPlayerControl {
 
@@ -28,6 +30,12 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     // Media Controller
     private MediaController mediaController;
 
+    // Check Connectivity
+    private CheckConnectivity checkConnectivity;
+
+    // Wi-Fi icon
+    private ImageView wifiIcon;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +45,8 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
         // Set up the Media Controller
         mediaController = new MediaController(getActivity());
+
+        checkConnectivity = new CheckConnectivity(getActivity());
     }
 
     @Override
@@ -44,37 +54,47 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.video_layout, container, false);
 
-        // Anchor mediaController View
-        mediaController.setAnchorView(v);
+        // Wi-Fi icon find by id
+        wifiIcon = (ImageView) v.findViewById(R.id.wifi_video_image_view);
 
-        // Set Up the Video View
-        vidView = (VideoView) v.findViewById(R.id.video_view);
+        if(checkConnectivity.isConnected()){
+            vidView.setVisibility(View.VISIBLE);
 
-        // Address URI Parsing and Setting
-        vidAddress = "http://androidprova.altervista.org/100415/Video_100415.mp4";
-        vidUri = Uri.parse(vidAddress);
-        vidView.setVideoURI(vidUri);
+            // Anchor mediaController View
+            mediaController.setAnchorView(v);
 
-        // Video start
-        try{
-          vidView.start();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+            // Set Up the Video View
+            vidView = (VideoView) v.findViewById(R.id.video_view);
+
+            // Address URI Parsing and Setting
+            vidAddress = "http://androidprova.altervista.org/100415/Video_100415.mp4";
+            vidUri = Uri.parse(vidAddress);
+            vidView.setVideoURI(vidUri);
+
+            // Video start
+            try{
+                vidView.start();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+
+            // Set the media controller for the Video View
+            vidView.setMediaController(mediaController);
+            v.setOnTouchListener(new View.OnTouchListener(){
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    mediaController.show();
+                    return false;
+                }
+            });
+        } else {
+            wifiIcon.setVisibility(View.VISIBLE);
         }
 
-        // Set the media controller for the Video View
-        vidView.setMediaController(mediaController);
-        v.setOnTouchListener(new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mediaController.show();
-                return false;
-            }
-        });
 
         return v;
     }
