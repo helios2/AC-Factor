@@ -1,8 +1,12 @@
 package it.adepti.ac_factor.fragment;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -24,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import it.adepti.ac_factor.R;
+import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
 
@@ -41,6 +46,10 @@ public class Testo extends Fragment {
     private String downloadURL;
     // Media state
     private String mediaState;
+    // Broadcast receiver
+    private BroadcastReceiver networkStateReceiver;
+    // Check Connectivity Manager
+    CheckConnectivity connectivityManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +59,9 @@ public class Testo extends Fragment {
         //-----------------------------------------------------
         // INITIALIZE VARIABLES
         //-----------------------------------------------------
+
+        // Initialize Connectivity Manager
+        connectivityManager = new CheckConnectivity(getActivity());
 
         // Initialize Media State
         mediaState = Environment.getExternalStorageState();
@@ -71,6 +83,20 @@ public class Testo extends Fragment {
                                 Constants.TEXT_RESOURCE +
                                 todayString +
                                 Constants.TEXT_EXTENSION);
+
+        //-----------------------------------------------------
+        // REGISTERING RECEIVER
+        //-----------------------------------------------------
+        networkStateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                downloadTodayText();
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        getActivity().registerReceiver(networkStateReceiver, filter);
+
     }
 
     @Override
@@ -78,37 +104,45 @@ public class Testo extends Fragment {
         Log.d("LifeCycle", "Testo onCreateView");
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
-
         Log.d("Media", mediaState);
+
+        downloadTodayText();
+
+        return v;
+    }
+
+    private void downloadTodayText() {
         if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
             if (!downloadedFileOnDevice.exists()) {
+                if (connectivityManager.isConnected()) {
 
-                // Progress dialog for download
-                mProgressDialog = new ProgressDialog(getActivity());
-                mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(true);
+                    // Progress dialog for download
+                    mProgressDialog = new ProgressDialog(getActivity());
+                    mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
+                    mProgressDialog.setIndeterminate(true);
+                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    mProgressDialog.setCancelable(true);
 
-                // execute this when the downloader must be fired
-                final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
-                downloadTextTask.execute(downloadURL);
-                Log.d("Download", "Try to download " + downloadURL);
+                    // execute this when the downloader must be fired
+                    final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
+                    downloadTextTask.execute(downloadURL);
+                    Log.d("Download", "Try to download " + downloadURL);
 
-                mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        downloadTextTask.cancel(true);
-                    }
-                });
+                    mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            downloadTextTask.cancel(true);
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), "Non sei connesso alla rete", Toast.LENGTH_LONG).show();
+                }
             } else {
                 mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
             }
-        }else{
+        } else {
             Toast.makeText(getActivity(), "Memoria esterna non raggiungibile", Toast.LENGTH_SHORT).show();
         }
-
-        return v;
     }
 
     // Task to download text
@@ -208,7 +242,6 @@ public class Testo extends Fragment {
                 Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
                 mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
             }
-
         }
     }
 }
