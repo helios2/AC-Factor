@@ -1,7 +1,10 @@
 package it.adepti.ac_factor;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 
@@ -16,10 +19,13 @@ import java.io.File;
 import it.adepti.ac_factor.fragment.Audio;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
-import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.FilesSupport;
 
 public class MainActivity extends FragmentActivity {
+
+    // Constants
+    private final String TAG = "MainActivity";
+    private static final int SETTINGS_RESULT = 101;
 
     // Fragment per i tab
     private FragmentTabHost mTabHost;
@@ -86,8 +92,24 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SETTINGS_RESULT){
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            Log.d(TAG, "Notifiche: " + sharedPreferences.getBoolean("prefPushNotify", true));
+        }
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
+            case R.id.action_settings:
+                Log.d(TAG,"Action Settings");
+                Intent intent = new Intent(getApplicationContext(), Settings.class);
+                startActivityForResult(intent, SETTINGS_RESULT);
+                return true;
             case R.id.action_exit:
                 finish();
                 return true;
