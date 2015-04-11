@@ -17,6 +17,8 @@ import java.io.IOException;
 
 import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.utils.CheckConnectivity;
+import it.adepti.ac_factor.utils.Constants;
+import it.adepti.ac_factor.utils.FilesSupport;
 
 public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
 
@@ -24,23 +26,28 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     // Media Player
     private MediaPlayer mediaPlayer;
-
     // Media Controller
     private MediaController mediaController;
-
     // Audio URL
-    private String audioAddress;
-
+    private String streamingAudioURL;
+    // String for today
+    private String todayString;
     // Image View
     private ImageView audioIcon;
-
+    private ImageView wifiIcon;
     // Check Connectivity
     private CheckConnectivity checkConnectivity;
+    // Util Constants
+    public static final String CURRENT_POSITION = "curr_pos";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "Audio onCreate");
         super.onCreate(savedInstanceState);
+
+        //-----------------------------------------------------
+        // INITIALIZE VARIABLES
+        //-----------------------------------------------------
 
         // Set up the Media Player
         mediaPlayer = new MediaPlayer();
@@ -49,7 +56,18 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         // Set up the Media Controller
         mediaController = new MediaController(getActivity());
 
+        // Set up connectivity
         checkConnectivity = new CheckConnectivity(getActivity());
+
+        // Initialize todayString in a format ggMMyy
+        todayString = FilesSupport.dateTodayToString();
+
+        // Initialize directory for download the file. It depends from todayString
+        streamingAudioURL = new String(Constants.DOMAIN +
+                                        todayString +
+                                        Constants.AUDIO_RESOURCE +
+                                        todayString +
+                                        Constants.AUDIO_EXTENSION);
 
     }
 
@@ -58,7 +76,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         // Save audio position
         Log.d("LifeCycle", "Audio onSavedInstanceState");
         super.onSaveInstanceState(outState);
-        outState.putInt("curr_pos", mediaPlayer.getCurrentPosition());
+        outState.putInt(CURRENT_POSITION, mediaPlayer.getCurrentPosition());
         Log.d("VideoBug","curr_audio_pos " + mediaPlayer.getCurrentPosition());
     }
 
@@ -76,6 +94,8 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         // Audio Icon findById
         audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
+        //TODO Qualcosa è andato storto con questa vista!
+        //wifiIcon = (ImageView) v.findViewById(R.id.wifi_audio_image_view);
 
         if(!checkConnectivity.isConnected()) {
             Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
@@ -93,10 +113,9 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
             // Media Player Settings
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            audioAddress = "http://androidprova.altervista.org/100415/Audio_100415.mp3";
 
             try {
-                mediaPlayer.setDataSource(audioAddress);
+                mediaPlayer.setDataSource(streamingAudioURL);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (SecurityException e) {
@@ -116,7 +135,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                 e.printStackTrace();
             }
             if (savedInstanceState != null)
-                mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
+                mediaPlayer.seekTo(savedInstanceState.getInt(CURRENT_POSITION));
 
             mediaPlayer.start();
         }

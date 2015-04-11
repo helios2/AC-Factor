@@ -17,6 +17,8 @@ import android.widget.VideoView;
 
 import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.utils.CheckConnectivity;
+import it.adepti.ac_factor.utils.Constants;
+import it.adepti.ac_factor.utils.FilesSupport;
 
 public class Video extends Fragment implements MediaController.MediaPlayerControl {
 
@@ -24,14 +26,13 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
     // Video View
     private VideoView vidView;
-
     // Video address
-    private String vidAddress;
+    private String streamingVideoURL;
     private Uri vidUri;
-
+    // String for today
+    private String todayString;
     // Media Controller
     private MediaController mediaController;
-
     // Check connectivity
     private CheckConnectivity checkConnectivity;
 
@@ -41,12 +42,18 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
         // Create the video view on the activity
         vidView = new VideoView(getActivity());
-
         // Set up the Media Controller
         mediaController = new MediaController(getActivity());
-
         // Check Connectivity
         checkConnectivity = new CheckConnectivity(getActivity());
+        // Initialize todayString in a format ggMMyy
+        todayString = FilesSupport.dateTodayToString();
+        // Initialize directory for download the file. It depends from todayString
+        streamingVideoURL = new String(Constants.DOMAIN +
+                                        todayString +
+                                        Constants.VIDEO_RESOURCE +
+                                        todayString +
+                                        Constants.VIDEO_EXTENSION);
     }
 
     @Override
@@ -65,8 +72,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         vidView = (VideoView) v.findViewById(R.id.video_view);
 
         // Address URI Parsing and Setting
-        vidAddress = "http://androidprova.altervista.org/100415/Video_100415.mp4";
-        vidUri = Uri.parse(vidAddress);
+        vidUri = Uri.parse(streamingVideoURL);
         vidView.setVideoURI(vidUri);
 
         // Video start

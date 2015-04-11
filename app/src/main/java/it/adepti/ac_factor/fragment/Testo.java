@@ -43,7 +43,7 @@ public class Testo extends Fragment {
     // String for today
     private String todayString;
     // String for URL download
-    private String downloadURL;
+    private String downloadTextURL;
     // Media state
     private String mediaState;
     // Broadcast Receiver
@@ -81,11 +81,11 @@ public class Testo extends Fragment {
                 Constants.TEXT_EXTENSION);
 
         // Initialize directory for download the file. It depends from todayString
-        downloadURL = new String(Constants.DOMAIN +
-                                todayString +
-                                Constants.TEXT_RESOURCE +
-                                todayString +
-                                Constants.TEXT_EXTENSION);
+        downloadTextURL = new String(Constants.DOMAIN +
+                                    todayString +
+                                    Constants.TEXT_RESOURCE +
+                                    todayString +
+                                    Constants.TEXT_EXTENSION);
 
         //-----------------------------------------------------
         // REGISTERING RECEIVER
@@ -111,7 +111,7 @@ public class Testo extends Fragment {
 
         if(savedInstanceState != null){
             downloadedFileOnDevice = new File(savedInstanceState.getString("downloadFile"));
-            downloadURL = savedInstanceState.getString("downloadUrl");
+            downloadTextURL = savedInstanceState.getString("downloadUrl");
         }
 
         downloadTodayText();
@@ -122,7 +122,7 @@ public class Testo extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if(downloadedFileOnDevice != null) outState.putString("downloadFile", downloadedFileOnDevice.toString());
-        if(downloadURL != null) outState.putString("downloadUrl", downloadURL);
+        if(downloadTextURL != null) outState.putString("downloadUrl", downloadTextURL);
         super.onSaveInstanceState(outState);
     }
 
@@ -144,6 +144,7 @@ public class Testo extends Fragment {
     }
 
     private void downloadTodayText() {
+        //TODO Rivedere l'ordine dei controlli
         if (!downloadedFileOnDevice.exists()) {
             if (connectivityManager.isConnected()) {
                 if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
@@ -157,8 +158,8 @@ public class Testo extends Fragment {
 
                     // execute this when the downloader must be fired
                     final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
-                    downloadTextTask.execute(downloadURL);
-                    Log.d("Download", "Try to download " + downloadURL);
+                    downloadTextTask.execute(downloadTextURL);
+                    Log.d("Download", "Try to download " + downloadTextURL);
 
                     mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                         @Override
