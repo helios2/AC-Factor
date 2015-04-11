@@ -15,15 +15,6 @@
         android:layout_gravity="center_horizontal"
         android:src="@drawable/audio_icon"
         android:layout_centerInParent="true"
-        android:visibility="invisible"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/wifi_audio_image_view"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/wifi"
-        android:layout_centerInParent="true"
-        android:visibility="invisible"/>
+        android:visibility="visible"/>
 
 </RelativeLayout>

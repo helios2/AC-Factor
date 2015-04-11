@@ -19,5 +19,6 @@
 
     <!-- Text Activity -->
     <string name="text_downloadText">Download risorsa testuale in corso...</string>
+    <string name="text_noConnection">Connettersi ad una rete</string>
 
 </resources>

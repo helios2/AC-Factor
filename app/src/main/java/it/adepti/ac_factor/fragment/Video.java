@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.net.Uri;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import it.adepti.ac_factor.R;
@@ -33,9 +34,6 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     // Check connectivity
     private CheckConnectivity checkConnectivity;
 
-    // Wi-Fi icon
-    private ImageView wifiIcon;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,45 +53,41 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.video_layout, container, false);
 
-        wifiIcon = (ImageView) v.findViewById(R.id.wifi_video_image_view);
-
-        if(checkConnectivity.isConnected()){
-            // Anchor mediaController View
-            mediaController.setAnchorView(v);
-
-            // Set Up the Video View
-            vidView = (VideoView) v.findViewById(R.id.video_view);
-
-            // Address URI Parsing and Setting
-            vidAddress = "http://androidprova.altervista.org/100415/Video_100415.mp4";
-            vidUri = Uri.parse(vidAddress);
-            vidView.setVideoURI(vidUri);
-
-            // Video start
-            try{
-                vidView.start();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-
-            // Set the media controller for the Video View
-            vidView.setMediaController(mediaController);
-            v.setOnTouchListener(new View.OnTouchListener(){
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    mediaController.show();
-                    return false;
-                }
-            });
-        } else {
-            wifiIcon.setVisibility(View.VISIBLE);
+        if(!checkConnectivity.isConnected()) {
+            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
         }
 
+        // Anchor mediaController View
+        mediaController.setAnchorView(v);
 
+        // Set Up the Video View
+        vidView = (VideoView) v.findViewById(R.id.video_view);
+
+        // Address URI Parsing and Setting
+        vidAddress = "http://androidprova.altervista.org/100415/Video_100415.mp4";
+        vidUri = Uri.parse(vidAddress);
+        vidView.setVideoURI(vidUri);
+
+        // Video start
+        try{
+            vidView.start();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+
+        // Set the media controller for the Video View
+        vidView.setMediaController(mediaController);
+        v.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mediaController.show();
+                return false;
+            }
+        });
 
         return v;
     }

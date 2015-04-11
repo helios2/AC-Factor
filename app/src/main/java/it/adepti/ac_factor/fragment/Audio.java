@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -29,11 +30,9 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     // Audio URL
     private String audioAddress;
-    private boolean isInternetOn = true; // TODO settarlo ad un valore vero
 
     // Image View
     private ImageView audioIcon;
-    private ImageView wifiIcon;
 
     // Check Connectivity
     private CheckConnectivity checkConnectivity;
@@ -75,12 +74,12 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         Log.d("LifeCycle", "Audio onCreateView");
         View v = inflater.inflate(R.layout.audio_layout, container, false);
 
-        // Wi-Fi and Audio Icons findById
+        // Audio Icon findById
         audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
-        wifiIcon = (ImageView) v.findViewById(R.id.wifi_audio_image_view);
 
-        if(checkConnectivity.isConnected()){
-            audioIcon.setVisibility(View.VISIBLE);
+        if(!checkConnectivity.isConnected()) {
+            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
+        } else {
             // Anchor mediaController to the Fragment's view
             mediaController.setAnchorView(v);
 
@@ -118,11 +117,9 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
             }
             if (savedInstanceState != null)
                 mediaPlayer.seekTo(savedInstanceState.getInt("curr_pos"));
-            mediaPlayer.start();
-        } else {
-            wifiIcon.setVisibility(View.VISIBLE);
-        }
 
+            mediaPlayer.start();
+        }
 
         return v;
     }
