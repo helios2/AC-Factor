@@ -1,5 +1,6 @@
 package it.adepti.ac_factor.fragment;
 
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;

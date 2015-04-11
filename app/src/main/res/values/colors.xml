@@ -8,4 +8,8 @@
 
     <!-- Action bar text color -->
     <color name="action_bar_text_color">#FFFFFFFF</color>
+
+    <!-- VideoView background color -->
+    <color name="videoView_not_active">#eaecee</color>
+    <color name="videoView_active">#00000000</color>
 </resources>
