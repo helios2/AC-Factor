@@ -3,7 +3,7 @@
     <PreferenceCategory android:title="Impostazioni" >
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="prefPushNotify"
+            android:key="@string/pushNotificationPreference"
             android:summary="Attiva le notifiche giornaliere per sapere se sono disponibili nuovi contenuti"
             android:title="Notifiche Push" >
         </CheckBoxPreference>

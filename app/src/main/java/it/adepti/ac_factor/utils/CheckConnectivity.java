@@ -47,7 +47,6 @@ public class CheckConnectivity {
 
     public boolean isConnected(){
         connectivityManager = (ConnectivityManager) activity.getSystemService(activity.getApplicationContext().CONNECTIVITY_SERVICE);
-
         activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }

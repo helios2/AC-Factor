@@ -19,6 +19,7 @@ import java.io.File;
 import it.adepti.ac_factor.fragment.Audio;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
+import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
 import it.adepti.ac_factor.utils.FilesSupport;
 
 public class MainActivity extends FragmentActivity {
