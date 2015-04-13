@@ -12,4 +12,6 @@ public interface Constants {
 
     public static final String VIDEO_RESOURCE = "/Video_";
     public static final String VIDEO_EXTENSION = ".mp4";
+
+    public static final int MSG_CHECK_AUDIO_SOURCE = 112;
 }

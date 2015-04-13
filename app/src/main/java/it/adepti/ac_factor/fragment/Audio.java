@@ -1,8 +1,10 @@
 package it.adepti.ac_factor.fragment;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.LogRecord;
 
 import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.utils.CheckConnectivity;
@@ -109,52 +112,13 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
 
         // AsyncTask Setting
-        CheckFileExistence checkFileExistence = new CheckFileExistence(this);
+        CheckFileExistence checkFileExistence = new CheckFileExistence(streamingAudioURL, v, savedInstanceState);
         checkFileExistence.execute();
 
         Log.d(TAG,"checkAudio " + checkAudioSource);
 
         if(!checkConnectivity.isConnected()) {
             Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
-        } else if(checkAudioSource) {
-            // Anchor mediaController to the Fragment's view
-            mediaController.setAnchorView(v);
-
-            v.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    mediaController.show();
-                    return false;
-                }
-            });
-
-            // Media Player Settings
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-            try {
-                mediaPlayer.setDataSource(streamingAudioURL);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // Media Player prepare and start
-            try {
-                mediaPlayer.prepare();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (savedInstanceState != null)
-                mediaPlayer.seekTo(savedInstanceState.getInt(CURRENT_POSITION));
-
-            mediaPlayer.start();
         }
 
         return v;
@@ -222,30 +186,76 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     private class CheckFileExistence extends AsyncTask {
 
-        private Audio audio;
+        private String url;
+        private View v;
+        private Bundle savedInstanceState;
+        private boolean checkAudio;
         private RemoteServer remoteServer = new RemoteServer();
 
 
-        public CheckFileExistence(Audio audio){
-            this.audio = audio;
+        public CheckFileExistence(String url, View v, Bundle savedInstanceState){
+            this.url = url;
+            this.v = v;
+            this.savedInstanceState = savedInstanceState;
         }
+
 
         @Override
         protected Object doInBackground(Object[] params) {
             Log.d(TAG,"doInBackground called");
 
-            if(!remoteServer.checkFileExistenceOnServer(audio.streamingAudioURL)){
+            if(!remoteServer.checkFileExistenceOnServer(url)){
                 Log.d(TAG, "No audio content");
-                audio.checkAudioSource = false;
-            } else audio.checkAudioSource = true;
+                checkAudio = false;
+            } else checkAudio = true;
 
             return null;
         }
 
         @Override
         protected void onPostExecute(Object o) {
-            if(!audio.checkAudioSource)
+            if(!checkAudio) {
                 Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_LONG).show();
+            } else {
+                // Anchor mediaController to the Fragment's view
+                mediaController.setAnchorView(v);
+
+                v.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        mediaController.show();
+                        return false;
+                    }
+                });
+
+                // Media Player Settings
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+                try {
+                    mediaPlayer.setDataSource(streamingAudioURL);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // Media Player prepare and start
+                try {
+                    mediaPlayer.prepare();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (savedInstanceState != null)
+                    mediaPlayer.seekTo(savedInstanceState.getInt(CURRENT_POSITION));
+
+                mediaPlayer.start();
+            }
         }
     }
 }
