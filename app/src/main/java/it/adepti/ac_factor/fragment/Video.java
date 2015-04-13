@@ -57,7 +57,6 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
                                         Constants.VIDEO_RESOURCE +
                                         todayString +
                                         Constants.VIDEO_EXTENSION);
-        streamingVideoURL = "fdds";
     }
 
     @Override

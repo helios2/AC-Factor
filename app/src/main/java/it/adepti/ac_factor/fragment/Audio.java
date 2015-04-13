@@ -55,6 +55,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     // Util Constants
     public static final String CURRENT_POSITION = "curr_pos";
+    private long time;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -220,10 +221,14 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                 // Anchor mediaController to the Fragment's view
                 mediaController.setAnchorView(v);
 
+                // Start timer
+                time = System.currentTimeMillis();
+
                 v.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        mediaController.show();
+                        if(System.currentTimeMillis() - time > 1500)
+                            mediaController.show();
                         return false;
                     }
                 });
@@ -255,6 +260,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                     mediaPlayer.seekTo(savedInstanceState.getInt(CURRENT_POSITION));
 
                 mediaPlayer.start();
+
             }
         }
     }
