@@ -215,8 +215,9 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         @Override
         protected void onPostExecute(Object o) {
-            if(!checkAudio && checkConnectivity.isConnected()) {
-                Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_LONG).show();
+            if(!checkAudio) {
+                if(checkConnectivity.isConnected())
+                    Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_LONG).show();
             } else {
                 // Anchor mediaController to the Fragment's view
                 mediaController.setAnchorView(v);

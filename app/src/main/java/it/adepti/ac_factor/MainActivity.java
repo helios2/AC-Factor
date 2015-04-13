@@ -1,7 +1,9 @@
 package it.adepti.ac_factor;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -116,11 +118,25 @@ public class MainActivity extends FragmentActivity {
                 Intent intent = new Intent(getApplicationContext(), Settings.class);
                 startActivityForResult(intent, SETTINGS_RESULT);
                 return true;
+            case R.id.action_facebook:
+                Intent fb_intent = getOpenFacebookIntent(this);
+                startActivity(fb_intent);
+                return true;
             case R.id.action_exit:
                 finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static Intent getOpenFacebookIntent(Context context) {
+
+        try {
+            context.getPackageManager().getPackageInfo("com.facebook.katana", 0);
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("fb://events/369142586623334/"));
+        } catch (Exception e) {
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/events/369142586623334/"));
         }
     }
 
