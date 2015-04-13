@@ -1,9 +1,11 @@
 package it.adepti.ac_factor.fragment;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +21,7 @@ import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
+import it.adepti.ac_factor.utils.RemoteServer;
 
 public class Video extends Fragment implements MediaController.MediaPlayerControl {
 
@@ -54,12 +57,16 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
                                         Constants.VIDEO_RESOURCE +
                                         todayString +
                                         Constants.VIDEO_EXTENSION);
+        streamingVideoURL = "fdds";
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.video_layout, container, false);
+
+        CheckFileExistence checkFileExistence = new CheckFileExistence(streamingVideoURL);
+        checkFileExistence.execute();
 
         if(!checkConnectivity.isConnected()) {
             Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
@@ -175,5 +182,35 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     @Override
     public int getAudioSessionId() {
         return 0;
+    }
+
+    private class CheckFileExistence extends AsyncTask {
+
+        private String url;
+        private boolean checkFileResult;
+        private RemoteServer remoteServer = new RemoteServer();
+
+
+        public CheckFileExistence(String url){
+            this.url = url;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            Log.d(TAG,"doInBackground called");
+
+            if(!remoteServer.checkFileExistenceOnServer(url)){
+                Log.d(TAG, "No video content");
+                checkFileResult = false;
+            } else checkFileResult = true;
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            if(!checkFileResult)
+                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_LONG).show();
+        }
     }
 }

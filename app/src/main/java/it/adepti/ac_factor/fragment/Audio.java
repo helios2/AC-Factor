@@ -2,6 +2,8 @@ package it.adepti.ac_factor.fragment;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -11,14 +13,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.net.URL;
 
 import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
+import it.adepti.ac_factor.utils.RemoteServer;
 
 public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
 
@@ -26,17 +31,25 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     // Media Player
     private MediaPlayer mediaPlayer;
+
     // Media Controller
     private MediaController mediaController;
+
     // Audio URL
     private String streamingAudioURL;
+
     // String for today
     private String todayString;
+
     // Image View
     private ImageView audioIcon;
-    private ImageView wifiIcon;
+
     // Check Connectivity
     private CheckConnectivity checkConnectivity;
+
+    // Check audio source
+    private boolean checkAudioSource;
+
     // Util Constants
     public static final String CURRENT_POSITION = "curr_pos";
 
@@ -94,12 +107,16 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         // Audio Icon findById
         audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
-        //TODO Qualcosa è andato storto con questa vista!
-        //wifiIcon = (ImageView) v.findViewById(R.id.wifi_audio_image_view);
+
+        // AsyncTask Setting
+        CheckFileExistence checkFileExistence = new CheckFileExistence(this);
+        checkFileExistence.execute();
+
+        Log.d(TAG,"checkAudio " + checkAudioSource);
 
         if(!checkConnectivity.isConnected()) {
             Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
-        } else {
+        } else if(checkAudioSource) {
             // Anchor mediaController to the Fragment's view
             mediaController.setAnchorView(v);
 
@@ -201,5 +218,34 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     @Override
     public int getAudioSessionId() {
         return 0;
+    }
+
+    private class CheckFileExistence extends AsyncTask {
+
+        private Audio audio;
+        private RemoteServer remoteServer = new RemoteServer();
+
+
+        public CheckFileExistence(Audio audio){
+            this.audio = audio;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            Log.d(TAG,"doInBackground called");
+
+            if(!remoteServer.checkFileExistenceOnServer(audio.streamingAudioURL)){
+                Log.d(TAG, "No audio content");
+                audio.checkAudioSource = false;
+            } else audio.checkAudioSource = true;
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            if(!audio.checkAudioSource)
+                Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -168,10 +168,10 @@ public class Testo extends Fragment {
                         }
                     });
                 } else {
-                    Toast.makeText(getActivity(), "Memoria esterna non raggiungibile", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.external_memory_problem), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(getActivity(), "Non sei connesso alla rete", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
             }
         } else {
             mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
