@@ -39,6 +39,9 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     // Check connectivity
     private CheckConnectivity checkConnectivity;
 
+    private long time;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,12 +95,16 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
             e.printStackTrace();
         }
 
+        // Start timer
+        time = System.currentTimeMillis();
+
         // Set the media controller for the Video View
         vidView.setMediaController(mediaController);
         v.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                mediaController.show();
+                if(System.currentTimeMillis() - time > 1500)
+                    mediaController.show();
                 return false;
             }
         });
