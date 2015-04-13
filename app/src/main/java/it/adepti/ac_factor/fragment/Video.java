@@ -1,6 +1,7 @@
 package it.adepti.ac_factor.fragment;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.net.Uri;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -38,6 +40,8 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     private MediaController mediaController;
     // Check connectivity
     private CheckConnectivity checkConnectivity;
+    // Progress Bar
+    private ProgressBar progressBar = null;
 
     private long time;
 
@@ -79,6 +83,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
         // Set Up the Video View
         vidView = (VideoView) v.findViewById(R.id.video_view);
+        progressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
 
         // Address URI Parsing and Setting
         vidUri = Uri.parse(streamingVideoURL);
@@ -94,6 +99,22 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        vidView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+                mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                        progressBar.setVisibility(View.GONE);
+                        mp.start();
+                    }
+                });
+            }
+        });
 
         // Start timer
         time = System.currentTimeMillis();
