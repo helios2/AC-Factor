@@ -7,14 +7,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -44,11 +42,9 @@ public class NotificationService extends Service{
     // Receiver State
     private boolean isRegistered = false;
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind");
-        return null;
-    }
+    //=============================================
+    // ASYNC TASK
+    //=============================================
 
     private class CheckOnNetworkUpTask extends AsyncTask{
 
@@ -77,6 +73,16 @@ public class NotificationService extends Service{
             super.onPostExecute(o);
             mContext.stopService(new Intent(mContext, NotificationService.class));
         }
+    }
+
+    //=============================================
+    // SERVICE METHODS
+    //=============================================
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind");
+        return null;
     }
 
     @Override
@@ -123,6 +129,10 @@ public class NotificationService extends Service{
         super.onDestroy();
     }
 
+    //=============================================
+    // RECEIVERS
+    //=============================================
+
     private final BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -155,6 +165,10 @@ public class NotificationService extends Service{
         }
     };
 
+    //=============================================
+    // MISCELLANEA
+    //=============================================
+
     private void initializeTodayVariables(){
 
         // Initialize todayString in a format ggMMyy
@@ -176,6 +190,10 @@ public class NotificationService extends Service{
                 Constants.TEXT_EXTENSION);
     }
 
+    /**
+     * Create a notification on android notification bar
+     * @param message Message to display into notification.
+     */
     private void createNotification(String message) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_notification_icon)
