@@ -74,10 +74,6 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         CheckFileExistence checkFileExistence = new CheckFileExistence(streamingVideoURL);
         checkFileExistence.execute();
 
-        if(!checkConnectivity.isConnected()) {
-            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
-        }
-
         // Anchor mediaController View
         mediaController.setAnchorView(v);
 
@@ -100,21 +96,26 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
             e.printStackTrace();
         }
 
-        progressBar.setVisibility(View.VISIBLE);
+        if(checkConnectivity.isConnected()) {
 
-        vidView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-                mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-                    @Override
-                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                        progressBar.setVisibility(View.GONE);
-                        mp.start();
-                    }
-                });
-            }
-        });
+            progressBar.setVisibility(View.VISIBLE);
+
+            vidView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                    mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                        @Override
+                        public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                            progressBar.setVisibility(View.GONE);
+                            mp.start();
+                        }
+                    });
+                }
+            });
+        }else{
+            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
+        }
 
         // Start timer
         time = System.currentTimeMillis();
