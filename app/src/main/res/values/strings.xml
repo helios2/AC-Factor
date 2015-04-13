@@ -25,4 +25,6 @@
     <!-- String Ids -->
     <string name="pushNotificationPreference">prefPushNotify</string>
 
+    <string name="hello_world">Hello world!</string>
+
 </resources>
