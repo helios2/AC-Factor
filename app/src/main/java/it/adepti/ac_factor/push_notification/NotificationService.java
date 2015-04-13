@@ -63,8 +63,8 @@ public class NotificationService extends Service{
         protected Object doInBackground(Object[] params) {
             if (RemoteServer.checkFileExistenceOnServer(downloadTextURL)){
                 createNotification(getString(R.string.text_newContent));
-
-            }
+                Log.d(TAG, "File exists on server " + downloadTextURL);
+            } else Log.d(TAG, "File doesn't exists on server " + downloadTextURL);
             return null;
         }
 
