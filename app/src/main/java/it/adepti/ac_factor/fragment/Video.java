@@ -236,7 +236,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
         @Override
         protected void onPostExecute(Object o) {
-            if(!checkFileResult)
+            if(!checkFileResult && checkConnectivity.isConnected())
                 Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_LONG).show();
         }
     }
