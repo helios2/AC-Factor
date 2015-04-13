@@ -29,6 +29,8 @@ import it.adepti.ac_factor.utils.RemoteServer;
 
 public class NotificationService extends Service{
 
+    //Debug
+    private final String TAG = "ServiceNotification";
     // Intent Filter
     private IntentFilter filter;
     // File downloaded on device
@@ -44,7 +46,7 @@ public class NotificationService extends Service{
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d("Service", "onBind");
+        Log.d(TAG, "onBind");
         return null;
     }
 
@@ -79,7 +81,7 @@ public class NotificationService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("Service", "onStartCommand");
+        Log.d(TAG, "onStartCommand");
 
         // Initialize Media State
         mediaState = Environment.getExternalStorageState();
@@ -94,14 +96,15 @@ public class NotificationService extends Service{
                     CheckOnNetworkUpTask myTask = new CheckOnNetworkUpTask(this);
                     myTask.execute();
                 } else {
-                    // FILE ALREADY EXIST (APP ALREADY OPENED)
+                    Log.d(TAG, "File Already Exist");
                     this.stopSelf();
                 }
             }else{
-                Log.e("Service", "Media not mounted, it is impossible to read memory");
+                Log.e(TAG, "Media not mounted, it is impossible to read memory");
             }
         }else {
             // Connection is down...register receiver to wait connectivity.
+            Log.d(TAG, "Register Receiver");
             filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(networkStateReceiver, filter);
             isRegistered = true;
@@ -112,7 +115,7 @@ public class NotificationService extends Service{
 
     @Override
     public void onDestroy() {
-        Log.d("Service", "onDestroy");
+        Log.d(TAG, "onDestroy");
         if(isRegistered) {
             unregisterReceiver(networkStateReceiver);
             isRegistered = false;
@@ -123,7 +126,7 @@ public class NotificationService extends Service{
     private final BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("Service", "Called onReceive");
+            Log.d(TAG, "Called onReceive");
             Bundle extras = intent.getExtras();
             NetworkInfo info = (NetworkInfo) extras.getParcelable("networkInfo");
 
@@ -140,14 +143,14 @@ public class NotificationService extends Service{
                         CheckOnNetworkUpTask myTask = new CheckOnNetworkUpTask(context);
                         myTask.execute();
                     }else{
-                        // FILE ALREADY EXIST (APP ALREADY OPENED)
+                        Log.d(TAG, "Receiver - File Already Exist");
                         context.stopService(new Intent(context, NotificationService.class));
                     }
                 }else{
-                    // MEDIA NOT MOUNTED
+                    Log.e(TAG, "Receiver - Media Not Mounted");
                 }
             }else{
-                // NETWORK DOWN
+                Log.d(TAG, "Connection Down");
             }
         }
     };
@@ -175,7 +178,7 @@ public class NotificationService extends Service{
 
     private void createNotification(String message) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_notification_icon)
                 .setContentTitle(getResources().getString(R.string.app_name))
                 .setContentText(message);
         Intent resultIntent = new Intent(this, MainActivity.class);
