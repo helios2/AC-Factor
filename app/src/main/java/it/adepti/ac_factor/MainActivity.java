@@ -20,6 +20,7 @@ import it.adepti.ac_factor.fragment.Audio;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
 import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
+import it.adepti.ac_factor.push_notification.NotificationService;
 import it.adepti.ac_factor.utils.FilesSupport;
 
 public class MainActivity extends FragmentActivity {
@@ -52,6 +53,10 @@ public class MainActivity extends FragmentActivity {
         mTabHost.addTab(mTabHost.newTabSpec("tab_txt").setIndicator(buildTabLayout(getResources().getString(R.string.tab_testo))), Testo.class, null);
         mTabHost.addTab(mTabHost.newTabSpec("tab_video").setIndicator(buildTabLayout(getResources().getString(R.string.tab_video))), Video.class, null);
         mTabHost.addTab(mTabHost.newTabSpec("tab_audio").setIndicator(buildTabLayout(getResources().getString(R.string.tab_audio))), Audio.class, null);
+
+        /** CODICE DEBUG */ //TODO DA ELMINARE
+        Intent startServiceIntent = new Intent(this, NotificationService.class);
+        this.startService(startServiceIntent);
     }
 
 

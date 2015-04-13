@@ -129,12 +129,14 @@ public class NotificationService extends Service{
 
             NetworkInfo.State state = info.getState();
 
+            initializeTodayVariables();
 
             if(state == NetworkInfo.State.CONNECTED){
                 // NETWORK UP
                 if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
-                    initializeTodayVariables();
+                    // MEDIA MOUNTED
                     if(!downloadedFileOnDevice.exists()) {
+                        // FILE NOT EXIST (CHECK FOR UPDATES)
                         CheckOnNetworkUpTask myTask = new CheckOnNetworkUpTask(context);
                         myTask.execute();
                     }else{
