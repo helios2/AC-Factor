@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.protocol.HTTP;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,6 +54,8 @@ public class Testo extends Fragment {
     private CheckConnectivity connectivityManager;
     // Intent Filter
     private IntentFilter filter;
+    // Dialog Already Shown
+    private boolean alreadyShown;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,9 @@ public class Testo extends Fragment {
                                     todayString +
                                     Constants.TEXT_EXTENSION);
 
+        // Initialize already shown
+        alreadyShown = false;
+
         //-----------------------------------------------------
         // REGISTERING RECEIVER
         //-----------------------------------------------------
@@ -112,6 +119,7 @@ public class Testo extends Fragment {
         if(savedInstanceState != null){
             downloadedFileOnDevice = new File(savedInstanceState.getString("downloadFile"));
             downloadTextURL = savedInstanceState.getString("downloadUrl");
+            alreadyShown = savedInstanceState.getBoolean("alreadyShown");
         }
 
         downloadTodayText();
@@ -123,24 +131,35 @@ public class Testo extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         if(downloadedFileOnDevice != null) outState.putString("downloadFile", downloadedFileOnDevice.toString());
         if(downloadTextURL != null) outState.putString("downloadUrl", downloadTextURL);
+        outState.putBoolean("alreadyShown", alreadyShown);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroy() {
+        Log.d("LifeCycle", "Testo onDestroy");
         super.onDestroy();
     }
 
     @Override
     public void onPause() {
+        Log.d("LifeCycle", "Testo onPause");
         getActivity().unregisterReceiver(networkStateReceiver);
         super.onPause();
     }
 
     @Override
     public void onResume() {
+        Log.d("LifeCycle", "Testo onResume");
         getActivity().registerReceiver(networkStateReceiver,filter);
         super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d("LifeCycle", "Testo onStop");
+        if(mProgressDialog != null)mProgressDialog.dismiss();
+        super.onStop();
     }
 
     private void downloadTodayText() {
@@ -183,6 +202,7 @@ public class Testo extends Fragment {
 
         private Context context;
         private PowerManager.WakeLock mWakeLock;
+        private int resultCode;
 
         public DownloadTextTask(Context context) {
             this.context = context;
@@ -196,7 +216,8 @@ public class Testo extends Fragment {
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
             mWakeLock.acquire();
-            mProgressDialog.show();
+            if(!alreadyShown)
+                mProgressDialog.show();
         }
 
         @Override
@@ -211,6 +232,7 @@ public class Testo extends Fragment {
 
                 // Expect HTTP 200 OK
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    resultCode = connection.getResponseCode();
                     return "Server returned HTTP " + connection.getResponseCode()
                             + " " + connection.getResponseMessage();
                 }
@@ -266,13 +288,29 @@ public class Testo extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
+            Log.d("Dialog", "PostExecute");
+            super.onPostExecute(result);
             mWakeLock.release();
-            mProgressDialog.dismiss();
+            if(mProgressDialog.isShowing()) {
+                Log.d("Dialog", "Dismiss");
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgressDialog.dismiss();
+                    }
+                });
+                alreadyShown = true;
+            }
             if (result != null){
-                Toast.makeText(context, "Download error: " + result, Toast.LENGTH_LONG).show();
+                if(resultCode == HttpURLConnection.HTTP_NOT_FOUND)
+                    Toast.makeText(context, getResources().getString(R.string.no_text_content), Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(context, getResources().getString(R.string.server_response) + result,
+                            Toast.LENGTH_SHORT).show();
             }
             else {
-                Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getResources().getString(R.string.resource_downloaded),
+                        Toast.LENGTH_SHORT).show();
                 mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
             }
         }
