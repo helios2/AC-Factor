@@ -1,5 +1,6 @@
 package it.adepti.ac_factor;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,9 +57,9 @@ public class MainActivity extends FragmentActivity {
         mTabHost.addTab(mTabHost.newTabSpec("tab_video").setIndicator(buildTabLayout(getResources().getString(R.string.tab_video))), Video.class, null);
         mTabHost.addTab(mTabHost.newTabSpec("tab_audio").setIndicator(buildTabLayout(getResources().getString(R.string.tab_audio))), Audio.class, null);
 
-        /** CODICE DEBUG */ //TODO DA ELMINARE
-        Intent startServiceIntent = new Intent(this, NotificationService.class);
-        this.startService(startServiceIntent);
+//        /** CODICE DEBUG */ //TODO DA ELMINARE
+//        Intent startServiceIntent = new Intent(this, NotificationService.class);
+//        this.startService(startServiceIntent);
     }
 
 

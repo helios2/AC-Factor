@@ -13,12 +13,15 @@
     <string name="tab_video">Video</string>
     <string name="tab_audio">Audio</string>
 
-    <!-- Text Activity -->
+    <!-- Fragments String -->
     <string name="text_downloadText">Download risorsa testuale in corso...</string>
     <string name="text_noConnection">Non sei connesso alla rete</string>
     <string name="external_memory_problem">Memoria esterna non raggiungibile</string>
+    <string name="no_text_content">Nessun contenuto testuale, oggi.</string>
     <string name="no_audio_content">Nessun contenuto audio, oggi.</string>
     <string name="no_video_content">Nessun contenuto video, oggi.</string>
+    <string name="server_response">Risposta server:</string>
+    <string name="resource_downloaded">File scaricato</string>
 
     <!-- Notification Service -->
     <string name="text_newContent">Nuovi contenuti disponibili!</string>
