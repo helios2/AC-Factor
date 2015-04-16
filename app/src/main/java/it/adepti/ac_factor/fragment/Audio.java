@@ -119,7 +119,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         Log.d(TAG,"checkAudio " + checkAudioSource);
 
         if(!checkConnectivity.isConnected()) {
-            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
         }
 
         return v;
@@ -217,7 +217,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         protected void onPostExecute(Object o) {
             if(!checkAudio) {
                 if(checkConnectivity.isConnected())
-                    Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_SHORT).show();
             } else {
                 // Anchor mediaController to the Fragment's view
                 mediaController.setAnchorView(v);

@@ -75,7 +75,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         checkFileExistence.execute();
 
         if(!checkConnectivity.isConnected()) {
-            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
         }
 
         // Anchor mediaController View
@@ -237,7 +237,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         @Override
         protected void onPostExecute(Object o) {
             if(!checkFileResult && checkConnectivity.isConnected())
-                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
         }
     }
 }
