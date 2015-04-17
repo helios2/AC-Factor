@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -197,10 +199,12 @@ public class Testo extends Fragment {
                     Toast.makeText(getActivity(), getResources().getString(R.string.external_memory_problem), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
             }
         } else {
-            mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
+            mTextView.setText(
+                    Html.fromHtml(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString())));
+            mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }
 
@@ -318,7 +322,9 @@ public class Testo extends Fragment {
             else {
                 Toast.makeText(context, getResources().getString(R.string.resource_downloaded),
                         Toast.LENGTH_SHORT).show();
-                mTextView.setText(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString()));
+                mTextView.setText(
+                        Html.fromHtml(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString())));
+                mTextView.setMovementMethod(LinkMovementMethod.getInstance());
             }
         }
     }
