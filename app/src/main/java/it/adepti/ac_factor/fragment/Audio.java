@@ -57,6 +57,10 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     public static final String CURRENT_POSITION = "curr_pos";
     private long time;
 
+    private View v;
+
+    private Handler handler = new Handler();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "Audio onCreate");
@@ -65,13 +69,6 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         //-----------------------------------------------------
         // INITIALIZE VARIABLES
         //-----------------------------------------------------
-
-        // Set up the Media Player
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setOnPreparedListener(this);
-
-        // Set up the Media Controller
-        mediaController = new MediaController(getActivity());
 
         // Set up connectivity
         checkConnectivity = new CheckConnectivity(getActivity());
@@ -86,6 +83,36 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                                         todayString +
                                         Constants.AUDIO_EXTENSION);
 
+        Log.d(TAG, "Streaming url: " + streamingAudioURL);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("LifeCycle", "Audio onCreateView");
+        v = inflater.inflate(R.layout.audio_layout, container, false);
+
+        // Audio Icon findById
+        audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
+
+        // AsyncTask Setting
+        CheckFileExistence checkFileExistence = new CheckFileExistence(streamingAudioURL, savedInstanceState);
+        checkFileExistence.execute();
+
+        Log.d(TAG,"checkAudio " + checkAudioSource);
+
+        // Check Connectivity
+        if(!checkConnectivity.isConnected()) {
+            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
+        }
+
+        // Set up the Media Player
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnPreparedListener(this);
+
+        // Set up the Media Controller
+        mediaController = new MediaController(v.getContext());
+
+        return v;
     }
 
     @Override
@@ -104,32 +131,39 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         mediaPlayer.pause();
     }
 
+    //-----------------------------------------------------
+    // PREPARE THE MEDIA CONTROLLER
+    //-----------------------------------------------------
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("LifeCycle", "Audio onCreateView");
-        View v = inflater.inflate(R.layout.audio_layout, container, false);
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        Log.d("LifeCycle", "Audio onPrepared");
 
-        // Audio Icon findById
-        audioIcon = (ImageView) v.findViewById(R.id.audio_image_view);
-
-        // AsyncTask Setting
-        CheckFileExistence checkFileExistence = new CheckFileExistence(streamingAudioURL, v, savedInstanceState);
-        checkFileExistence.execute();
-
-        Log.d(TAG,"checkAudio " + checkAudioSource);
-
-        if(!checkConnectivity.isConnected()) {
-            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
-        }
-
-        return v;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
+        // Media Controller set-up
         mediaController.setMediaPlayer(this);
+        mediaController.setAnchorView(v.findViewById(R.id.media_controller_view));
+
+        // Thread for Media Controller
+        handler.post(new Runnable() {
+            public void run() {
+                mediaController.setEnabled(true);
+                mediaController.show();
+            }
+        });
+
+        // Show the Media Controller onTouch
+        v.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //if(System.currentTimeMillis() - time > 1500)
+                mediaController.show();
+                return false;
+            }
+        });
     }
 
+    //-----------------------------------------------------
+    // MEDIA CONTROLLER METHODS
+    //-----------------------------------------------------
     @Override
     public void start() {
         mediaPlayer.start();
@@ -185,25 +219,26 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         return 0;
     }
 
+    //-----------------------------------------------------
+    // CHECK FILE EXISTENCE ON SERVER
+    //-----------------------------------------------------
     private class CheckFileExistence extends AsyncTask {
 
         private String url;
-        private View v;
         private Bundle savedInstanceState;
         private boolean checkAudio;
         private RemoteServer remoteServer = new RemoteServer();
 
 
-        public CheckFileExistence(String url, View v, Bundle savedInstanceState){
+        public CheckFileExistence(String url, Bundle savedInstanceState){
             this.url = url;
-            this.v = v;
             this.savedInstanceState = savedInstanceState;
         }
 
 
         @Override
         protected Object doInBackground(Object[] params) {
-            Log.d(TAG,"doInBackground called");
+            Log.d("LifeCycle", "Audio doInBackground");
 
             if(!remoteServer.checkFileExistenceOnServer(url)){
                 Log.d(TAG, "No audio content");
@@ -215,28 +250,15 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         @Override
         protected void onPostExecute(Object o) {
+            Log.d("LifeCycle", "Audio onPostExecute");
             if(!checkAudio) {
                 if(checkConnectivity.isConnected())
                     Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_SHORT).show();
             } else {
-                // Anchor mediaController to the Fragment's view
-                mediaController.setAnchorView(v);
-
-                // Start timer
-                time = System.currentTimeMillis();
-
-                v.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if(System.currentTimeMillis() - time > 1500)
-                            mediaController.show();
-                        return false;
-                    }
-                });
-
                 // Media Player Settings
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
+                // Set Data Source
                 try {
                     mediaPlayer.setDataSource(streamingAudioURL);
                 } catch (IllegalArgumentException e) {
@@ -249,7 +271,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                     e.printStackTrace();
                 }
 
-                // Media Player prepare and start
+                // Media Player Prepare
                 try {
                     mediaPlayer.prepare();
                 } catch (IllegalStateException e) {
@@ -260,8 +282,8 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                 if (savedInstanceState != null)
                     mediaPlayer.seekTo(savedInstanceState.getInt(CURRENT_POSITION));
 
+                // Media Player Start
                 mediaPlayer.start();
-
             }
         }
     }

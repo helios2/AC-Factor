@@ -17,4 +17,10 @@
         android:layout_centerInParent="true"
         android:visibility="visible"/>
 
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/media_controller_view"
+        />
+
 </RelativeLayout>
