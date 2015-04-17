@@ -272,7 +272,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         protected void onPostExecute(Object o) {
             Log.d("LifeCycle", "Video onPostExecute");
 
-            if(!checkFileResult && checkConnectivity.isConnected())
+            if(!checkFileResult)
                 Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
         }
     }

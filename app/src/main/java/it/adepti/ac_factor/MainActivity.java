@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
 import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
 import it.adepti.ac_factor.push_notification.NotificationService;
+import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.FilesSupport;
 
 public class MainActivity extends FragmentActivity {
@@ -47,7 +49,8 @@ public class MainActivity extends FragmentActivity {
     private final String TAG = "MainActivity";
     private static final int SETTINGS_RESULT = 101;
 
-    private Drawable drawable;
+    // Check Connectivity
+    private CheckConnectivity checkConnectivity = new CheckConnectivity(this);
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -67,6 +70,11 @@ public class MainActivity extends FragmentActivity {
         /** Tab settings */
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
+
+        // Connectivity Status
+        if(!checkConnectivity.isConnected()){
+            Toast.makeText(this, getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -157,9 +165,6 @@ public class MainActivity extends FragmentActivity {
         // Page Count
         final int PAGE_COUNT = 3;
 
-        // Start position
-        private int start_position = 1;
-        private boolean start_activity = true;
 
         public SampleFragmentPagerAdapter() {
             super(getSupportFragmentManager());
@@ -173,6 +178,7 @@ public class MainActivity extends FragmentActivity {
             fragments.add(testo);
             fragments.add(video);
             fragments.add(audio);
+
         }
 
         @Override
@@ -183,13 +189,13 @@ public class MainActivity extends FragmentActivity {
         // Mostra i fragment visibili nella pager_header
         @Override
         public Fragment getItem(int position) {
-            return fragments.get(position);
+                return fragments.get(position);
         }
 
         // Setta i titoli nella pager_header
         @Override
         public CharSequence getPageTitle(int position) {
-            return titles.get(position);
+                return titles.get(position);
         }
 
     }
