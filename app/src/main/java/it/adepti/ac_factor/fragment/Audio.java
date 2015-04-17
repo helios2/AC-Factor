@@ -55,10 +55,11 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     // Util Constants
     public static final String CURRENT_POSITION = "curr_pos";
-    private long time;
 
+    // Layout View
     private View v;
 
+    // Media Controller Handler
     private Handler handler = new Handler();
 
     @Override
@@ -154,7 +155,6 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         v.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                //if(System.currentTimeMillis() - time > 1500)
                 mediaController.show();
                 return false;
             }
