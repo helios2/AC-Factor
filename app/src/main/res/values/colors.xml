@@ -13,5 +13,5 @@
     <color name="videoView_not_active">#eaecee</color>
     <color name="videoView_active">#00000000</color>
 
-    <color name="background_tab_pressed">#6633B5E5</color>
+    <color name="background_tab_pressed">#cc0000</color>
 </resources>

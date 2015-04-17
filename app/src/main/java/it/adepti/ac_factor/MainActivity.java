@@ -73,6 +73,9 @@ public class MainActivity extends FragmentActivity {
         viewPager.setCurrentItem(1);
         viewPager.setOffscreenPageLimit(1);
 
+        PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pager_header);
+        pagerTabStrip.setTabIndicatorColorResource(R.color.background_tab_pressed);
+
         // Connectivity Status
         if(!checkConnectivity.isConnected()){
             Toast.makeText(this, getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();

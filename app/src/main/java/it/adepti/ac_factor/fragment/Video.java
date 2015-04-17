@@ -67,8 +67,6 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
                                         Constants.VIDEO_RESOURCE +
                                         todayString +
                                         Constants.VIDEO_EXTENSION);
-
-        streamingVideoURL = "null";
     }
 
     @Override
