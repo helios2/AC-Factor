@@ -71,6 +71,7 @@ public class MainActivity extends FragmentActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
         viewPager.setCurrentItem(1);
+        viewPager.setOffscreenPageLimit(1);
 
         // Connectivity Status
         if(!checkConnectivity.isConnected()){

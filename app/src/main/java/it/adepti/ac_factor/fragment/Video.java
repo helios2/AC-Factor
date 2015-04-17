@@ -50,6 +50,8 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
     private boolean videoReady = false;
     // Video visibility
     private boolean videoVisible = false;
+    // Check File Result
+    private boolean checkFileResult;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,8 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
                                         Constants.VIDEO_RESOURCE +
                                         todayString +
                                         Constants.VIDEO_EXTENSION);
+
+        streamingVideoURL = "null";
     }
 
     @Override
@@ -72,16 +76,17 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
                              Bundle savedInstanceState) {
         Log.d("LifeCycle", "Video onCreateView");
 
-        v = inflater.inflate(R.layout.video_layout, container, false);
-
         CheckFileExistence checkFileExistence = new CheckFileExistence(streamingVideoURL);
         checkFileExistence.execute();
+
+        v = inflater.inflate(R.layout.video_layout, container, false);
 
         // Create the video view on the activity
         vidView = new VideoView(getActivity());
 
         // Set Up the Video View
         vidView = (VideoView) v.findViewById(R.id.video_view);
+        vidView.setVisibility(View.INVISIBLE);
         progressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
 
         // Address URI Parsing and Setting
@@ -110,8 +115,12 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         if (isVisibleToUser) {
             // Set video as Visible
             videoVisible = true;
+            vidView.setVisibility(View.VISIBLE);
             // Start video
             vidView.start();
+
+            if(!checkFileResult)
+                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
         } else {
             // Set video as Invisible
             videoVisible = false;
@@ -248,7 +257,6 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
     private class CheckFileExistence extends AsyncTask {
 
         private String url;
-        private boolean checkFileResult;
         private RemoteServer remoteServer = new RemoteServer();
 
 
@@ -272,8 +280,6 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         protected void onPostExecute(Object o) {
             Log.d("LifeCycle", "Video onPostExecute");
 
-            if(!checkFileResult)
-                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
         }
     }
 }

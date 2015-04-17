@@ -71,6 +71,9 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     private int seek_to = 0;
 
+    private boolean checkAudio;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "Audio onCreate");
@@ -127,6 +130,8 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         if (isVisibleToUser) {
             // Set audio visibile
             audioVisible = true;
+            if(!checkAudio)
+                Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_SHORT).show();
         } else {
             // Set audio invisible
             audioVisible = false;
@@ -266,7 +271,6 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         private String url;
         private Bundle savedInstanceState;
-        private boolean checkAudio;
         private RemoteServer remoteServer = new RemoteServer();
 
 
@@ -291,10 +295,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         @Override
         protected void onPostExecute(Object o) {
             Log.d("LifeCycle", "Audio onPostExecute");
-            if(!checkAudio) {
-                if(checkConnectivity.isConnected())
-                    Toast.makeText(getActivity(), getResources().getString(R.string.no_audio_content), Toast.LENGTH_SHORT).show();
-            } else {
+            if(checkAudio){
                 // Media Player Settings
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
