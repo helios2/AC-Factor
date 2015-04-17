@@ -70,6 +70,7 @@ public class MainActivity extends FragmentActivity {
         /** Tab settings */
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
+        viewPager.setCurrentItem(1);
 
         // Connectivity Status
         if(!checkConnectivity.isConnected()){
@@ -170,13 +171,13 @@ public class MainActivity extends FragmentActivity {
             super(getSupportFragmentManager());
 
             // Titles list setting
-            titles.add(getResources().getString(R.string.tab_testo).toUpperCase());
             titles.add(getResources().getString(R.string.tab_video).toUpperCase());
+            titles.add(getResources().getString(R.string.tab_testo).toUpperCase());
             titles.add(getResources().getString(R.string.tab_audio).toUpperCase());
 
             // Fragment list setting
-            fragments.add(testo);
             fragments.add(video);
+            fragments.add(testo);
             fragments.add(audio);
 
         }
