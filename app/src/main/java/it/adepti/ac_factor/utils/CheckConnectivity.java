@@ -3,6 +3,7 @@ package it.adepti.ac_factor.utils;
 import android.app.Activity;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 public class CheckConnectivity {
@@ -12,9 +13,9 @@ public class CheckConnectivity {
     private ConnectivityManager connectivityManager;
     private NetworkInfo activeNetwork;
 
-    private Activity activity;
+    private FragmentActivity activity;
 
-    public CheckConnectivity(Activity activity){
+    public CheckConnectivity(FragmentActivity activity){
         this.activity = activity;
     }
 

@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -62,6 +63,14 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     // Media Controller Handler
     private Handler handler = new Handler();
 
+    // Audio ready
+    private boolean audioReady = false;
+
+    // Audio visible
+    private boolean audioVisible = false;
+
+    private int seek_to = 0;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "Audio onCreate");
@@ -101,11 +110,6 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         Log.d(TAG,"checkAudio " + checkAudioSource);
 
-        // Check Connectivity
-        if(!checkConnectivity.isConnected()) {
-            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
-        }
-
         // Set up the Media Player
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnPreparedListener(this);
@@ -117,12 +121,41 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        Log.d("LifeCycle", "Audio setUserVisibleHint");
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            // Set audio visibile
+            audioVisible = true;
+        } else {
+            // Set audio invisible
+            audioVisible = false;
+            // Pause the media player
+            if (audioReady) {
+                mediaPlayer.pause();
+                // Hide media controller
+                mediaController.hide();
+            }
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         // Save audio position
         Log.d("LifeCycle", "Audio onSavedInstanceState");
         super.onSaveInstanceState(outState);
+        if(audioVisible)
         outState.putInt(CURRENT_POSITION, mediaPlayer.getCurrentPosition());
-        Log.d("VideoBug","curr_audio_pos " + mediaPlayer.getCurrentPosition());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        Log.d("LifeCycle", "Video onViewStateRestored");
+        // Restore dell'ultimo punto in cui si stava visualizzando il video
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null && audioVisible) {
+            seek_to = savedInstanceState.getInt(CURRENT_POSITION);
+        }
     }
 
     @Override
@@ -147,7 +180,8 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         handler.post(new Runnable() {
             public void run() {
                 mediaController.setEnabled(true);
-                mediaController.show();
+                if(audioVisible)
+                    mediaController.show();
             }
         });
 
@@ -155,10 +189,15 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
         v.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                mediaController.show();
+                if(audioVisible)
+                    mediaController.show();
                 return false;
             }
         });
+
+        // Audio ready (settato perché la prima chiamata dell'activity è fatta s setUserVisibleHint)
+        if(!audioReady)
+            audioReady = true;
     }
 
     //-----------------------------------------------------
@@ -166,6 +205,7 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
     //-----------------------------------------------------
     @Override
     public void start() {
+        Log.d(TAG, "Start Media Player (Media Controller");
         mediaPlayer.start();
     }
 
@@ -281,9 +321,6 @@ public class Audio extends Fragment implements MediaPlayer.OnPreparedListener, M
                 }
                 if (savedInstanceState != null)
                     mediaPlayer.seekTo(savedInstanceState.getInt(CURRENT_POSITION));
-
-                // Media Player Start
-                mediaPlayer.start();
             }
         }
     }
