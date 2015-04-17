@@ -136,6 +136,13 @@ public class Testo extends Fragment {
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser)
+            Log.d("Visibility", "Testo");
+    }
+
+    @Override
     public void onDestroy() {
         Log.d("LifeCycle", "Testo onDestroy");
         super.onDestroy();

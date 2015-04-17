@@ -1,23 +1,38 @@
 package it.adepti.ac_factor;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTabHost;
 
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.ViewPager;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.adepti.ac_factor.fragment.Audio;
 import it.adepti.ac_factor.fragment.Testo;
@@ -32,10 +47,10 @@ public class MainActivity extends FragmentActivity {
     private final String TAG = "MainActivity";
     private static final int SETTINGS_RESULT = 101;
 
-    // Fragment per i tab
-    private FragmentTabHost mTabHost;
+    private Drawable drawable;
 
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "MainActivity onCreate");
@@ -50,16 +65,8 @@ public class MainActivity extends FragmentActivity {
         if(!todayDirectory.exists()) todayDirectory.mkdirs();
 
         /** Tab settings */
-        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
-        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
-
-        mTabHost.addTab(mTabHost.newTabSpec("tab_txt").setIndicator(buildTabLayout(getResources().getString(R.string.tab_testo))), Testo.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("tab_video").setIndicator(buildTabLayout(getResources().getString(R.string.tab_video))), Video.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("tab_audio").setIndicator(buildTabLayout(getResources().getString(R.string.tab_audio))), Audio.class, null);
-
-//        /** CODICE DEBUG */ //TODO DA ELMINARE
-//        Intent startServiceIntent = new Intent(this, NotificationService.class);
-//        this.startService(startServiceIntent);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(new SampleFragmentPagerAdapter());
     }
 
 
@@ -87,19 +94,6 @@ public class MainActivity extends FragmentActivity {
         super.onDestroy();
     }
 
-    private View buildTabLayout(String tag) {
-        View tab = getLayoutInflater().inflate(R.layout.tab_layout, null);
-        TextView tv = (TextView) tab.findViewById(R.id.tab_layout_tv);
-        tv.setText(tag);
-        return tab;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -108,7 +102,15 @@ public class MainActivity extends FragmentActivity {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             Log.d(TAG, "Notifiche: " + sharedPreferences.getBoolean("prefPushNotify", true));
         }
+    }
 
+    // ---------------------------------------------
+    // Menù
+    // ---------------------------------------------
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
@@ -131,8 +133,66 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    // ---------------------------------------------
+    // Facebook Intent
+    // ---------------------------------------------
     public static Intent getOpenFacebookIntent(Context context) {
         return new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/events/369142586623334/"));
     }
 
+    // ---------------------------------------------
+    // Fragment Pager Adapter Settings
+    // ---------------------------------------------
+    public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        // Fragment
+        private Testo testo = new Testo();
+        private Video video = new Video();
+        private Audio audio = new Audio();
+
+        // Titles
+        private List<String> titles = new ArrayList<>();
+        private List<Fragment> fragments = new ArrayList<>();
+
+        // Page Count
+        final int PAGE_COUNT = 3;
+
+        // Start position
+        private int start_position = 1;
+        private boolean start_activity = true;
+
+        public SampleFragmentPagerAdapter() {
+            super(getSupportFragmentManager());
+
+            // Titles list setting
+            titles.add(getResources().getString(R.string.tab_testo).toUpperCase());
+            titles.add(getResources().getString(R.string.tab_video).toUpperCase());
+            titles.add(getResources().getString(R.string.tab_audio).toUpperCase());
+
+            // Fragment list setting
+            fragments.add(testo);
+            fragments.add(video);
+            fragments.add(audio);
+        }
+
+        @Override
+        public int getCount() {
+            return PAGE_COUNT;
+        }
+
+        // Mostra i fragment visibili nella pager_header
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        // Setta i titoli nella pager_header
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles.get(position);
+        }
+
+    }
 }
+
+

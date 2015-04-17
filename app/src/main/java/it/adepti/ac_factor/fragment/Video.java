@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -25,7 +26,7 @@ import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
 import it.adepti.ac_factor.utils.RemoteServer;
 
-public class Video extends Fragment implements MediaController.MediaPlayerControl {
+public class Video extends Fragment implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
 
     private final String TAG = "Video";
 
@@ -39,23 +40,23 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     // Media Controller
     private MediaController mediaController;
     // Check connectivity
-    private CheckConnectivity checkConnectivity;
+    private CheckConnectivity checkConnectivity = new CheckConnectivity(getActivity());
     // Progress Bar
     private ProgressBar progressBar = null;
-
-    private long time;
-
+    private Handler handler;
+    // Layout View
+    private View v;
+    // Video Ready
+    private boolean videoReady = false;
+    // Video visibility
+    private boolean videoVisible = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("LifeCycle", "Video onCreate");
+
         super.onCreate(savedInstanceState);
 
-        // Create the video view on the activity
-        vidView = new VideoView(getActivity());
-        // Set up the Media Controller
-        mediaController = new MediaController(getActivity());
-        // Check Connectivity
-        checkConnectivity = new CheckConnectivity(getActivity());
         // Initialize todayString in a format ggMMyy
         todayString = FilesSupport.dateTodayToString();
         // Initialize directory for download the file. It depends from todayString
@@ -69,17 +70,15 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.video_layout, container, false);
+        Log.d("LifeCycle", "Video onCreateView");
+
+        v = inflater.inflate(R.layout.video_layout, container, false);
 
         CheckFileExistence checkFileExistence = new CheckFileExistence(streamingVideoURL);
         checkFileExistence.execute();
 
-        if(!checkConnectivity.isConnected()) {
-            Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
-        }
-
-        // Anchor mediaController View
-        mediaController.setAnchorView(v);
+        // Create the video view on the activity
+        vidView = new VideoView(getActivity());
 
         // Set Up the Video View
         vidView = (VideoView) v.findViewById(R.id.video_view);
@@ -89,7 +88,70 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         vidUri = Uri.parse(streamingVideoURL);
         vidView.setVideoURI(vidUri);
 
-        // Video start
+        // Progress Bar
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Prepared Listner for Video View
+        vidView.setOnPreparedListener(this);
+
+        // Set up the Media Controller
+        mediaController = new MediaController(v.getContext());
+
+        // Set the media controller for the Video View
+        vidView.setMediaController(mediaController);
+
+        return v;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        Log.d("LifeCycle", "Video seUserVisibleHint");
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            // Set video as Visible
+            videoVisible = true;
+            // Start video
+            vidView.start();
+        } else {
+            // Set video as Invisible
+            videoVisible = false;
+            // Pause if video is ready and the fragment is not visible to user
+            if (videoReady) {
+                vidView.pause();
+                // Hide the Media Controller
+                mediaController.hide();
+            }
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d("LifeCycle", "Video onSaveInstanceState");
+        // Salva l'ultimo punto in cui si stava visualizzando il video
+        super.onSaveInstanceState(outState);
+        outState.putInt("video_pos", vidView.getCurrentPosition());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        Log.d("LifeCycle", "Video onViewStateRestored");
+        // Restore dell'ultimo punto in cui si stava visualizzando il video
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null) {
+            vidView.seekTo(savedInstanceState.getInt("video_pos"));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        Log.d("LifeCycle", "Video onPause");
+        super.onPause();
+        vidView.pause();
+    }
+
+    @Override
+    public void start() {
         try{
             vidView.start();
         } catch (IllegalArgumentException e) {
@@ -99,66 +161,6 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-
-        progressBar.setVisibility(View.VISIBLE);
-
-        vidView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-                mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-                    @Override
-                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                        progressBar.setVisibility(View.GONE);
-                        mp.start();
-                    }
-                });
-            }
-        });
-
-        // Start timer
-        time = System.currentTimeMillis();
-
-        // Set the media controller for the Video View
-        vidView.setMediaController(mediaController);
-        v.setOnTouchListener(new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(System.currentTimeMillis() - time > 1500)
-                    mediaController.show();
-                return false;
-            }
-        });
-
-        return v;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // Salva l'ultimo punto in cui si stava visualizzando il video
-        super.onSaveInstanceState(outState);
-        outState.putInt("video_pos", vidView.getCurrentPosition());
-    }
-
-
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        // Restore dell'ultimo punto in cui si stava visualizzando il video
-        super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState != null)
-            vidView.seekTo(savedInstanceState.getInt("video_pos"));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        vidView.pause();
-    }
-
-    @Override
-    public void start() {
-        vidView.start();
     }
 
     @Override
@@ -211,6 +213,38 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
         return 0;
     }
 
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        Log.d("LifeCycle", "Video onPrepared");
+        // Anchor mediaController View
+        mediaController.setAnchorView(v.findViewById(R.id.media_controller_video_view));
+
+        if(videoVisible)
+            mediaController.setEnabled(true);
+
+        mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                progressBar.setVisibility(View.GONE);
+                if(videoVisible)
+                    mp.start();
+            }
+        });
+
+        v.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(videoVisible)
+                    mediaController.show();
+                return false;
+            }
+        });
+
+        // Video ready (settato perché la prima chiamata dell'activity è fatta s setUserVisibleHint)
+        if(!videoReady)
+            videoReady = true;
+    }
+
     private class CheckFileExistence extends AsyncTask {
 
         private String url;
@@ -224,7 +258,7 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
         @Override
         protected Object doInBackground(Object[] params) {
-            Log.d(TAG,"doInBackground called");
+            Log.d("LifeCycle", "Video doInBackground");
 
             if(!remoteServer.checkFileExistenceOnServer(url)){
                 Log.d(TAG, "No video content");
@@ -236,6 +270,8 @@ public class Video extends Fragment implements MediaController.MediaPlayerContro
 
         @Override
         protected void onPostExecute(Object o) {
+            Log.d("LifeCycle", "Video onPostExecute");
+
             if(!checkFileResult && checkConnectivity.isConnected())
                 Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
         }
