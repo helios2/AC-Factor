@@ -5,7 +5,8 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:background="#eaecee"
-    android:theme="@style/Theme.Acfactortheme">
+    android:theme="@style/Theme.Acfactortheme"
+    android:id="@+id/rootLayout">
 
     <VideoView
         android:id="@+id/video_view"
@@ -14,7 +15,7 @@
         android:layout_centerInParent="true" />
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/progress_bar_vid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

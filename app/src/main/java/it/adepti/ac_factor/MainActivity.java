@@ -161,7 +161,8 @@ public class MainActivity extends FragmentActivity {
 
         // Fragment
         private Testo testo = new Testo();
-        private Video video = new Video(checkConnectivity.isConnected());
+//        private Video video = new Video(checkConnectivity.isConnected());
+        private Video video = new Video();
         private Concorso concorso = new Concorso();
 
         // Titles

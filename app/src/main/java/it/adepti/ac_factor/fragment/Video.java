@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -53,11 +54,13 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
     private boolean videoVisible = false;
     // Check File Result
     private boolean checkFileResult;
+    // Check Connectivity
+    private CheckConnectivity checkConnectivity;
 
-    @SuppressLint("ValidFragment")
-    public Video(boolean isConnected){
-        this.isConnected = isConnected;
-    }
+//    @SuppressLint("ValidFragment")
+//    public Video(boolean isConnected){
+//        this.isConnected = isConnected;
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,10 +72,13 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         todayString = FilesSupport.dateTodayToString();
         // Initialize directory for download the file. It depends from todayString
         streamingVideoURL = new String(Constants.DOMAIN +
-                                        todayString +
-                                        Constants.VIDEO_RESOURCE +
-                                        todayString +
-                                        Constants.VIDEO_EXTENSION);
+                todayString +
+                Constants.VIDEO_RESOURCE +
+                todayString +
+                Constants.VIDEO_EXTENSION);
+        // Check for connection status
+        checkConnectivity = new CheckConnectivity(getActivity());
+        isConnected = checkConnectivity.isConnected();
     }
 
     @Override
@@ -91,14 +97,17 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         // Set Up the Video View
         vidView = (VideoView) v.findViewById(R.id.video_view);
         vidView.setVisibility(View.INVISIBLE);
-        progressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
+
+        // Set up progressBar
+        progressBar = (ProgressBar) v.findViewById(R.id.progress_bar_vid);
 
         // Address URI Parsing and Setting
         vidUri = Uri.parse(streamingVideoURL);
         vidView.setVideoURI(vidUri);
 
         // Progress Bar
-        progressBar.setVisibility(View.VISIBLE);
+        if (isConnected)
+            progressBar.setVisibility(View.VISIBLE);
 
         // Prepared Listner for Video View
         vidView.setOnPreparedListener(this);
@@ -123,7 +132,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
             // Start video
             vidView.start();
 
-            if(!checkFileResult && isConnected)
+            if (!checkFileResult && isConnected)
                 Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
         } else {
             // Set video as Invisible
@@ -143,7 +152,8 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         Log.d("LifeCycle", "Video onSaveInstanceState");
         // Salva l'ultimo punto in cui si stava visualizzando il video
         super.onSaveInstanceState(outState);
-        outState.putInt("video_pos", vidView.getCurrentPosition());
+        if (vidView != null)
+            outState.putInt("video_pos", vidView.getCurrentPosition());
     }
 
     @Override
@@ -151,7 +161,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         Log.d("LifeCycle", "Video onViewStateRestored");
         // Restore dell'ultimo punto in cui si stava visualizzando il video
         super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             vidView.seekTo(savedInstanceState.getInt("video_pos"));
         }
     }
@@ -165,7 +175,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
 
     @Override
     public void start() {
-        try{
+        try {
             vidView.start();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -232,29 +242,27 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         // Anchor mediaController View
         mediaController.setAnchorView(v.findViewById(R.id.media_controller_video_view));
 
-        if(videoVisible)
+        if (videoVisible)
             mediaController.setEnabled(true);
 
-        mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+        mp.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
-            public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+            public void onBufferingUpdate(MediaPlayer mp, int percent) {
                 progressBar.setVisibility(View.GONE);
-                if(videoVisible)
-                    mp.start();
             }
         });
 
-        v.setOnTouchListener(new View.OnTouchListener(){
+        v.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(videoVisible)
+                if (videoVisible)
                     mediaController.show();
                 return false;
             }
         });
 
         // Video ready (settato perché la prima chiamata dell'activity è fatta s setUserVisibleHint)
-        if(!videoReady)
+        if (!videoReady)
             videoReady = true;
     }
 
@@ -264,7 +272,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         private RemoteServer remoteServer = new RemoteServer();
 
 
-        public CheckFileExistence(String url){
+        public CheckFileExistence(String url) {
             this.url = url;
         }
 
@@ -272,7 +280,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         protected Object doInBackground(Object[] params) {
             Log.d("LifeCycle", "Video doInBackground");
 
-            if(!remoteServer.checkFileExistenceOnServer(url)){
+            if (!remoteServer.checkFileExistenceOnServer(url)) {
                 Log.d(TAG, "No video content");
                 checkFileResult = false;
             } else checkFileResult = true;
