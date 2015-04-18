@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.adepti.ac_factor.fragment.Audio;
+import it.adepti.ac_factor.fragment.Concorso;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
 import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
@@ -161,7 +162,7 @@ public class MainActivity extends FragmentActivity {
         // Fragment
         private Testo testo = new Testo();
         private Video video = new Video();
-        private Audio audio = new Audio();
+        private Concorso concorso = new Concorso();
 
         // Titles
         private List<String> titles = new ArrayList<>();
@@ -177,12 +178,12 @@ public class MainActivity extends FragmentActivity {
             // Titles list setting
             titles.add(getResources().getString(R.string.tab_video).toUpperCase());
             titles.add(getResources().getString(R.string.tab_testo).toUpperCase());
-            titles.add(getResources().getString(R.string.tab_audio).toUpperCase());
+            titles.add(getResources().getString(R.string.tab_concorso).toUpperCase());
 
             // Fragment list setting
             fragments.add(video);
             fragments.add(testo);
-            fragments.add(audio);
+            fragments.add(concorso);
 
         }
 

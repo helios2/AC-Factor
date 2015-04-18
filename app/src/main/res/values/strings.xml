@@ -12,6 +12,7 @@
     <string name="tab_testo">Testo</string>
     <string name="tab_video">Video</string>
     <string name="tab_audio">Audio</string>
+    <string name="tab_concorso">Concorso</string>
 
     <!-- Fragments String -->
     <string name="text_downloadText">Download risorsa testuale in corso...</string>
