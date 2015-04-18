@@ -1,5 +1,7 @@
 package it.adepti.ac_factor.fragment;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -41,18 +43,19 @@ public class Concorso extends Fragment {
         // CountDown Timer
         today = new GregorianCalendar();
         long countDownUtil = toDate.getTimeInMillis() - today.getTimeInMillis();
-        final SimpleDateFormat dataFormat = new SimpleDateFormat("dd:hh:mm:ss");
+        //final SimpleDateFormat dataFormat = new SimpleDateFormat("dd Giorni\nhh Ore\nmm Minuti\nss Secondi");
         countDownTimer = new CountDownTimer(countDownUtil, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);
-                String countdown = dataFormat.format(date);
+                String countdown = date.getDate() + " Giorni\n" + date.getHours() + " Ore\n" + date.getMinutes() + " Minuti\n" + date.getSeconds() + " Secondi";
 //                mTextView.setText("seconds remaining: " + millisUntilFinished / 1000);
-                mTextView.setText("Mancano " + countdown);
+                mTextView.setText("\n\nMancano\n" + countdown + "\nall'inizio del concorso!");
+
             }
 
             public void onFinish() {
-                mTextView.setText("done!");
+                mTextView.setText("Aggiorna l'app per vedere i video!");
             }
         }.start();
         return v;

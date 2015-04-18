@@ -1,5 +1,6 @@
 package it.adepti.ac_factor.fragment;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -40,7 +41,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
     // Media Controller
     private MediaController mediaController;
     // Check connectivity
-    private CheckConnectivity checkConnectivity = new CheckConnectivity(getActivity());
+    private boolean isConnected;
     // Progress Bar
     private ProgressBar progressBar = null;
     private Handler handler;
@@ -52,6 +53,11 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
     private boolean videoVisible = false;
     // Check File Result
     private boolean checkFileResult;
+
+    @SuppressLint("ValidFragment")
+    public Video(boolean isConnected){
+        this.isConnected = isConnected;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,7 +123,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
             // Start video
             vidView.start();
 
-            if(!checkFileResult)
+            if(!checkFileResult && isConnected)
                 Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
         } else {
             // Set video as Invisible

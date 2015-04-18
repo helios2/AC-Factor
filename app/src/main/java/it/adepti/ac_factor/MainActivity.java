@@ -79,7 +79,7 @@ public class MainActivity extends FragmentActivity {
 
         // Connectivity Status
         if(!checkConnectivity.isConnected()){
-            Toast.makeText(this, getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -161,7 +161,7 @@ public class MainActivity extends FragmentActivity {
 
         // Fragment
         private Testo testo = new Testo();
-        private Video video = new Video();
+        private Video video = new Video(checkConnectivity.isConnected());
         private Concorso concorso = new Concorso();
 
         // Titles
