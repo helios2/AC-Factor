@@ -10,7 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 import it.adepti.ac_factor.R;
 
@@ -37,10 +41,14 @@ public class Concorso extends Fragment {
         // CountDown Timer
         today = new GregorianCalendar();
         long countDownUtil = toDate.getTimeInMillis() - today.getTimeInMillis();
+        final SimpleDateFormat dataFormat = new SimpleDateFormat("dd:hh:mm:ss");
         countDownTimer = new CountDownTimer(countDownUtil, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                mTextView.setText("seconds remaining: " + millisUntilFinished / 1000);
+                Date date = new Date(millisUntilFinished);
+                String countdown = dataFormat.format(date);
+//                mTextView.setText("seconds remaining: " + millisUntilFinished / 1000);
+                mTextView.setText("Mancano " + countdown);
             }
 
             public void onFinish() {
