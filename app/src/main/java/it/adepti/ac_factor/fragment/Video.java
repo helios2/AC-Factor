@@ -132,8 +132,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
             // Start video
             vidView.start();
 
-            if (!checkFileResult && isConnected)
-                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
+
         } else {
             // Set video as Invisible
             videoVisible = false;
@@ -279,19 +278,20 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         @Override
         protected Object doInBackground(Object[] params) {
             Log.d("LifeCycle", "Video doInBackground");
-
             if (!remoteServer.checkFileExistenceOnServer(url)) {
                 Log.d(TAG, "No video content");
                 checkFileResult = false;
             } else checkFileResult = true;
-
             return null;
         }
 
         @Override
         protected void onPostExecute(Object o) {
             Log.d("LifeCycle", "Video onPostExecute");
-
+            if (!checkFileResult && isConnected) {
+                Log.d(TAG, "Toast created. checkFile: " + checkFileResult + ", isConnected: " + isConnected);
+                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

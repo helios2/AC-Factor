@@ -1,6 +1,7 @@
 package it.adepti.ac_factor.fragment;
 
 import android.annotation.TargetApi;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -25,11 +26,14 @@ public class Concorso extends Fragment {
     private CountDownTimer countDownTimer;
     private GregorianCalendar toDate = new GregorianCalendar(2015,4,10);
     private GregorianCalendar today;
+    private Typeface typeface;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "Testo onCreate");
         super.onCreate(savedInstanceState);
+
+        typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/clock.ttf");
 
         this.setRetainInstance(true);
     }
@@ -48,10 +52,9 @@ public class Concorso extends Fragment {
 
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);
-                String countdown = date.getDate() + " Giorni\n" + date.getHours() + " Ore\n" + date.getMinutes() + " Minuti\n" + date.getSeconds() + " Secondi";
-//                mTextView.setText("seconds remaining: " + millisUntilFinished / 1000);
-                mTextView.setText("\n\nMancano\n" + countdown + "\nall'inizio del concorso!");
-
+                String countdown = date.getDate() + " d " + date.getHours() + " h " + date.getMinutes() + " m " + date.getSeconds() + " s";
+                mTextView.setText("\nCountdown\n" + countdown);
+                mTextView.setTypeface(typeface);
             }
 
             public void onFinish() {
