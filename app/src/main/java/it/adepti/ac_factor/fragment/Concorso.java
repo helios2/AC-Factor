@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -44,7 +45,7 @@ public class Concorso extends Fragment {
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
 
-        // CountDown Timer
+                // CountDown Timer
         today = new GregorianCalendar();
         long countDownUtil = toDate.getTimeInMillis() - today.getTimeInMillis();
         //final SimpleDateFormat dataFormat = new SimpleDateFormat("dd Giorni\nhh Ore\nmm Minuti\nss Secondi");

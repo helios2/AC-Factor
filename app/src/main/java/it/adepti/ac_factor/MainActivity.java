@@ -37,6 +37,7 @@ import java.util.List;
 
 import it.adepti.ac_factor.fragment.Audio;
 import it.adepti.ac_factor.fragment.Concorso;
+import it.adepti.ac_factor.fragment.Concorso_new;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
 import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
@@ -161,9 +162,8 @@ public class MainActivity extends FragmentActivity {
 
         // Fragment
         private Testo testo = new Testo();
-//        private Video video = new Video(checkConnectivity.isConnected());
         private Video video = new Video();
-        private Concorso concorso = new Concorso();
+        private Concorso_new concorso = new Concorso_new();
 
         // Titles
         private List<String> titles = new ArrayList<>();
