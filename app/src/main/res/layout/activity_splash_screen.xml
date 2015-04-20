@@ -16,4 +16,30 @@
         android:src="@drawable/splash"
         android:focusableInTouchMode="false" />
 
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/splashProgressBar"
+        android:layout_below="@+id/splashIcon"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/splashButton"
+        android:layout_alignBottom="@+id/splashProgressBar"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New TextA"
+        android:id="@+id/splashTextView"
+        android:visibility="invisible"
+        android:layout_above="@+id/splashIcon"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

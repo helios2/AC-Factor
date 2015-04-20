@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,6 +33,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +49,7 @@ import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
 import it.adepti.ac_factor.push_notification.NotificationService;
 import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.FilesSupport;
+import it.adepti.ac_factor.utils.RemoteServer;
 
 public class MainActivity extends FragmentActivity {
 
@@ -51,9 +57,9 @@ public class MainActivity extends FragmentActivity {
     private final String TAG = "MainActivity";
     private static final int SETTINGS_RESULT = 101;
 
-    // Check Connectivity
-    private CheckConnectivity checkConnectivity = new CheckConnectivity(this);
-
+    // Files existence
+    private boolean testoVisible;
+    private boolean videoVisible;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -61,6 +67,13 @@ public class MainActivity extends FragmentActivity {
         Log.d("LifeCycle", "MainActivity onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /** Files existence */
+        Intent intent = getIntent();
+        testoVisible = intent.getBooleanExtra("testoVisible", testoVisible);
+        Log.d(TAG, "testoVisible = " + testoVisible);
+        videoVisible = intent.getBooleanExtra("videoVisible", videoVisible);
+        Log.d(TAG, "videoVisible = " + videoVisible);
 
         /** Create Root Directory */
         File rootDirectory = new File(Environment.getExternalStorageDirectory().toString() + "/acfactor");
@@ -72,16 +85,13 @@ public class MainActivity extends FragmentActivity {
         /** Tab settings */
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
-        viewPager.setCurrentItem(1);
-        viewPager.setOffscreenPageLimit(1);
+        //viewPager.setCurrentItem(1);
+        //viewPager.setOffscreenPageLimit(1);
 
         PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pager_header);
         pagerTabStrip.setTabIndicatorColorResource(R.color.background_tab_pressed);
 
-        // Connectivity Status
-        if(!checkConnectivity.isConnected()){
-            Toast.makeText(this, getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
-        }
+
     }
 
 
@@ -112,6 +122,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("LifeCycle", "MainActivity onActivityResult");
 
         if (requestCode == SETTINGS_RESULT){
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -163,27 +174,32 @@ public class MainActivity extends FragmentActivity {
         // Fragment
         private Testo testo = new Testo();
         private Video video = new Video();
-        private Concorso_new concorso = new Concorso_new();
+        private Concorso concorso = new Concorso();
 
         // Titles
         private List<String> titles = new ArrayList<>();
         private List<Fragment> fragments = new ArrayList<>();
 
         // Page Count
-        final int PAGE_COUNT = 3;
+        private int PAGE_COUNT = 1;
 
 
         public SampleFragmentPagerAdapter() {
             super(getSupportFragmentManager());
 
-            // Titles list setting
-            titles.add(getResources().getString(R.string.tab_video).toUpperCase());
-            titles.add(getResources().getString(R.string.tab_testo).toUpperCase());
-            titles.add(getResources().getString(R.string.tab_concorso).toUpperCase());
+            if (testoVisible){
+                PAGE_COUNT++;
+                titles.add(getResources().getString(R.string.tab_testo).toUpperCase());
+                fragments.add(testo);
+            }
 
-            // Fragment list setting
-            fragments.add(video);
-            fragments.add(testo);
+            if (videoVisible){
+                PAGE_COUNT++;
+                titles.add(getResources().getString(R.string.tab_video).toUpperCase());
+                fragments.add(video);
+            }
+
+            titles.add(getResources().getString(R.string.tab_concorso).toUpperCase());
             fragments.add(concorso);
 
         }

@@ -54,13 +54,6 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
     private boolean videoVisible = false;
     // Check File Result
     private boolean checkFileResult;
-    // Check Connectivity
-    private CheckConnectivity checkConnectivity;
-
-//    @SuppressLint("ValidFragment")
-//    public Video(boolean isConnected){
-//        this.isConnected = isConnected;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,18 +69,12 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
                 Constants.VIDEO_RESOURCE +
                 todayString +
                 Constants.VIDEO_EXTENSION);
-        // Check for connection status
-        checkConnectivity = new CheckConnectivity(getActivity());
-        isConnected = checkConnectivity.isConnected();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d("LifeCycle", "Video onCreateView");
-
-        CheckFileExistence checkFileExistence = new CheckFileExistence(streamingVideoURL);
-        checkFileExistence.execute();
 
         v = inflater.inflate(R.layout.video_layout, container, false);
 
@@ -96,7 +83,6 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         // Set Up the Video View
         vidView = (VideoView) v.findViewById(R.id.video_view);
-        vidView.setVisibility(View.INVISIBLE);
 
         // Set up progressBar
         progressBar = (ProgressBar) v.findViewById(R.id.progress_bar_vid);
@@ -106,8 +92,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         vidView.setVideoURI(vidUri);
 
         // Progress Bar
-        if (isConnected)
-            progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
 
         // Prepared Listner for Video View
         vidView.setOnPreparedListener(this);
@@ -128,11 +113,8 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         if (isVisibleToUser) {
             // Set video as Visible
             videoVisible = true;
-            vidView.setVisibility(View.VISIBLE);
             // Start video
-            vidView.start();
-
-
+            //vidView.start();
         } else {
             // Set video as Invisible
             videoVisible = false;
@@ -270,39 +252,8 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
             }
         });
 
-        // Video ready (settato perché la prima chiamata dell'activity è fatta s setUserVisibleHint)
+        // Video ready (settato perché la prima chiamata dell'activity è fatta su setUserVisibleHint)
         if (!videoReady)
             videoReady = true;
-    }
-
-    private class CheckFileExistence extends AsyncTask {
-
-        private String url;
-        private RemoteServer remoteServer = new RemoteServer();
-
-
-        public CheckFileExistence(String url) {
-            this.url = url;
-        }
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-            Log.d("LifeCycle", "Video doInBackground");
-            if (!remoteServer.checkFileExistenceOnServer(url)) {
-                Log.d(TAG, "No video content");
-                checkFileResult = false;
-            } else checkFileResult = true;
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            Log.d("LifeCycle", "Video onPostExecute");
-            if (!checkFileResult && isConnected) {
-                Log.d(TAG, "Toast created. checkFile: " + checkFileResult + ", isConnected: " + isConnected);
-                Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.GONE);
-            }
-        }
     }
 }

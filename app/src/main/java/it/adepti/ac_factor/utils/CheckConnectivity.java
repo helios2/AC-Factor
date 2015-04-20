@@ -13,9 +13,9 @@ public class CheckConnectivity {
     private ConnectivityManager connectivityManager;
     private NetworkInfo activeNetwork;
 
-    private FragmentActivity activity;
+    private Activity activity;
 
-    public CheckConnectivity(FragmentActivity activity){
+    public CheckConnectivity(Activity activity){
         this.activity = activity;
     }
 
