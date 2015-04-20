@@ -244,6 +244,16 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
         if (videoVisible)
             mediaController.setEnabled(true);
 
+//        mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+//            @Override
+//            public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+//                Log.d("SIZECHANGED", "VIDEO SIZE CHANGED");
+//                progressBar.setVisibility(View.GONE);
+//                if (videoVisible)
+//                    mp.start();
+//            }
+//        });
+
         mp.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
@@ -291,6 +301,7 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
             if (!checkFileResult && isConnected) {
                 Log.d(TAG, "Toast created. checkFile: " + checkFileResult + ", isConnected: " + isConnected);
                 Toast.makeText(getActivity(), getResources().getString(R.string.no_video_content), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
             }
         }
     }
