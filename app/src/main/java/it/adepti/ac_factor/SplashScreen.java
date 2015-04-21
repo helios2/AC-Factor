@@ -3,8 +3,10 @@ package it.adepti.ac_factor;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,13 +15,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.Constants;
@@ -66,7 +63,8 @@ public class SplashScreen extends Activity {
         setContentView(R.layout.activity_splash_screen);
 
         // Hide the action bar
-        getActionBar().hide();
+        if(Build.VERSION.SDK_INT >= 11)
+            getActionBar().hide();
         // Get animation Fade-in
         animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
         // Get Progress Bar

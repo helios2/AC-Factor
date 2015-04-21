@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
@@ -39,7 +40,8 @@ public class NoConnectionActivity extends Activity{
         setContentView(R.layout.activity_splash_screen);
 
         // Hide the action bar
-        getActionBar().hide();
+        if(Build.VERSION.SDK_INT >= 11)
+            getActionBar().hide();
 
         // Set View Object
         imageView = (ImageView) findViewById(R.id.splashIcon);
