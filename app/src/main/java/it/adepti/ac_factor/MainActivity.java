@@ -70,9 +70,9 @@ public class MainActivity extends FragmentActivity {
 
         /** Files existence */
         Intent intent = getIntent();
-        testoVisible = intent.getBooleanExtra("testoVisible", testoVisible);
+        testoVisible = intent.getBooleanExtra(SplashScreen.EXTRA_TEXT, testoVisible);
         Log.d(TAG, "testoVisible = " + testoVisible);
-        videoVisible = intent.getBooleanExtra("videoVisible", videoVisible);
+        videoVisible = intent.getBooleanExtra(SplashScreen.EXTRA_VIDEO, videoVisible);
         Log.d(TAG, "videoVisible = " + videoVisible);
 
         /** Create Root Directory */
@@ -91,9 +91,7 @@ public class MainActivity extends FragmentActivity {
         PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pager_header);
         pagerTabStrip.setTabIndicatorColorResource(R.color.background_tab_pressed);
 
-
     }
-
 
     @Override
     protected void onPause() {

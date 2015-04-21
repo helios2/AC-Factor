@@ -38,25 +38,23 @@ public class SplashScreen extends Activity {
 
     // Animation
     private Animation animFadein;
-
     // Image View
     private ImageView splashView;
-
     // Progress Bar
     private ProgressBar progressBar = null;
-
     // Check Connectivity
     private CheckConnectivity checkConnectivity = new CheckConnectivity(this);
-
     // Strings
     private String downloadTextURL;
     private String streamingVideoURL;
-
-    // Files existence
+    // Files existence on server
     private boolean txtExistence;
     private boolean vidExistence;
     // File downloaded on device
     private File downloadedFileOnDevice;
+    // Intents constants
+    public static final String EXTRA_TEXT = "testoVisible";
+    public static final String EXTRA_VIDEO = "videoVisible";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,20 +63,19 @@ public class SplashScreen extends Activity {
 
         // Hide the action bar
         getActionBar().hide();
-
         // Get animation Fade-in
         animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
-
         // Get Progress Bar
         progressBar = (ProgressBar) findViewById(R.id.splashProgressBar);
-
         // Get image view
         splashView = (ImageView) findViewById(R.id.splashIcon);
-
         // Set animation
         splashView.setAnimation(animFadein);
 
-        // Today Strings
+        //------------------------------
+        // TODAY STRINGS
+        //------------------------------
+
         // Initialize todayString in a format ggMMyy
         String todayString = FilesSupport.dateTodayToString();
         // Initialize directory for download the file. It depends from todayString
@@ -93,8 +90,7 @@ public class SplashScreen extends Activity {
                 Constants.VIDEO_RESOURCE +
                 todayString +
                 Constants.VIDEO_EXTENSION);
-
-        // Initalize File Testo Downloaded
+        // Initalize Text File Downloaded
         downloadedFileOnDevice = new File(Environment.getExternalStorageDirectory().toString() +
                 Constants.APP_ROOT_FOLDER +
                 "/" + todayString +
@@ -104,14 +100,15 @@ public class SplashScreen extends Activity {
 
         Thread mythread = new Thread() {
             public void run() {
+
                 try {
                     while (splashActive && ms < splashTime) {
-                        if(!paused)
-                            ms=ms+100;
+                        if (!paused)
+                            ms = ms + 100;
                         sleep(100);
                     }
-                } catch(Exception e) {}
-                finally {
+                } catch (Exception e) {
+                } finally {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -119,10 +116,10 @@ public class SplashScreen extends Activity {
                         }
                     });
                     // Connectivity Status
-                    if(!checkConnectivity.isConnected()){
+                    if (!checkConnectivity.isConnected()) {
                         Log.d(TAG, "No connection");
                         // Search text File Existence on SDCard
-                        if(downloadedFileOnDevice.exists()){
+                        if (downloadedFileOnDevice.exists()) {
                             Log.d(TAG, "File exists");
                             txtExistence = true;
                             intentMainActivity();
@@ -131,10 +128,10 @@ public class SplashScreen extends Activity {
                             intentNoConnection();
                         }
                     } else {
-
+                        Log.d(TAG, "Connection OK");
                         // TODO: possibile passare le stringhe con intent
-                        // Check Existence
-                        CheckFileExistence checkFileExistence = new CheckFileExistence(downloadTextURL,streamingVideoURL);
+                        // Check Existence On Server
+                        CheckFileExistence checkFileExistence = new CheckFileExistence(downloadTextURL, streamingVideoURL);
                         checkFileExistence.execute();
                     }
                 }
@@ -151,8 +148,8 @@ public class SplashScreen extends Activity {
 
     private void intentMainActivity(){
         Intent intent = new Intent(SplashScreen.this, MainActivity.class);
-        intent.putExtra("testoVisible",txtExistence);
-        intent.putExtra("videoVisible",vidExistence);
+        intent.putExtra(EXTRA_TEXT, txtExistence);
+        intent.putExtra(EXTRA_VIDEO, vidExistence);
         startActivity(intent);
         finish();
     }
@@ -184,8 +181,6 @@ public class SplashScreen extends Activity {
         private RemoteServer remoteServer = new RemoteServer();
         private String urlTxt;
         private String urlVid;
-        private int txtResultCode;
-        private int vidResultCode;
 
         public CheckFileExistence(String url_txt, String url_vid){
             this.urlTxt = url_txt;
@@ -206,30 +201,13 @@ public class SplashScreen extends Activity {
             }
 
             // Testo Check
-            HttpURLConnection connectionTesto = null;
-
-            try {
-                URL urlTesto = new URL(urlTxt);
-                connectionTesto = (HttpURLConnection) urlTesto.openConnection();
-                connectionTesto.connect();
-
-                // Expect HTTP 200 OK
-                if (connectionTesto.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    txtResultCode = connectionTesto.getResponseCode();
-                    return "(Testo) Server returned HTTP " + connectionTesto.getResponseCode()
-                            + " " + connectionTesto.getResponseMessage();
-                }
-
-                Log.d(TAG, "txtResultCode: " + txtResultCode);
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(remoteServer.checkFileExistenceOnServer(urlTxt)){
+                txtExistence = true;
+                Log.d(TAG, "txtExistence set to true");
+            } else {
+                txtExistence = false;
+                Log.d(TAG, "txtExistence set to false");
             }
-
-            if (connectionTesto != null)
-                connectionTesto.disconnect();
 
             return null;
         }
@@ -238,24 +216,6 @@ public class SplashScreen extends Activity {
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
             Log.d("LifeCycle", "SplashScreen onPostExecute");
-            if (txtResultCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                txtExistence = false;
-                Log.d(TAG, "txtExistence set to false");
-            }
-            else {
-                txtExistence = true;
-                Log.d(TAG, "txtExistence set to true");
-            }
-
-//            if (vidResultCode == HttpURLConnection.HTTP_NOT_FOUND){
-//                vidExistence = false;
-//                Log.d(TAG, "vidExistence set to false");
-//            }
-//            else {
-//                vidExistence = true;
-//                Log.d(TAG, "vidExistence set to true");
-//            }
-
             // Intent alla MainActivity
             intentMainActivity();
         }
