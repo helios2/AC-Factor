@@ -42,7 +42,7 @@ import java.util.List;
 
 import it.adepti.ac_factor.fragment.Audio;
 import it.adepti.ac_factor.fragment.Concorso;
-import it.adepti.ac_factor.fragment.Concorso_new;
+import it.adepti.ac_factor.fragment.Concorso_YouTube;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
 import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
@@ -53,7 +53,7 @@ import it.adepti.ac_factor.utils.RemoteServer;
 
 public class MainActivity extends FragmentActivity {
 
-    // Constants
+    // Constantsp
     private final String TAG = "MainActivity";
     private static final int SETTINGS_RESULT = 101;
 

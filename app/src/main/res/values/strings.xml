@@ -34,4 +34,9 @@
     <string name="txt_no_connect">Assicurarsi di essere connessi ad internet</string>
     <string name="txt_retry">Riprova</string>
 
+    <!-- YouTube -->
+    <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
+    <string name="playerview_text">This is a YouTubePlayerView!</string>
+    <string name="playerfragment_text">This is a YouTubePlayerFragment!</string>
+
 </resources>
