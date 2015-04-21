@@ -23,6 +23,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import it.adepti.ac_factor.R;
+import it.adepti.ac_factor.SplashScreen;
 import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
@@ -37,23 +38,16 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
     // Video address
     private String streamingVideoURL;
     private Uri vidUri;
-    // String for today
-    private String todayString;
     // Media Controller
     private MediaController mediaController;
-    // Check connectivity
-    private boolean isConnected;
     // Progress Bar
     private ProgressBar progressBar = null;
-    private Handler handler;
     // Layout View
     private View v;
     // Video Ready
     private boolean videoReady = false;
     // Video visibility
     private boolean videoVisible = false;
-    // Check File Result
-    private boolean checkFileResult;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,14 +55,9 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         super.onCreate(savedInstanceState);
 
-        // Initialize todayString in a format ggMMyy
-        todayString = FilesSupport.dateTodayToString();
+        Bundle bundle = this.getArguments();
         // Initialize directory for download the file. It depends from todayString
-        streamingVideoURL = new String(Constants.DOMAIN +
-                todayString +
-                Constants.VIDEO_RESOURCE +
-                todayString +
-                Constants.VIDEO_EXTENSION);
+        streamingVideoURL =  bundle.getString(SplashScreen.EXTRA_VIDEO_URL);
     }
 
     @Override
@@ -225,16 +214,6 @@ public class Video extends Fragment implements MediaPlayer.OnPreparedListener, M
 
         if (videoVisible)
             mediaController.setEnabled(true);
-
-//        mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-//            @Override
-//            public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-//                Log.d("SIZECHANGED", "VIDEO SIZE CHANGED");
-//                progressBar.setVisibility(View.GONE);
-//                if (videoVisible)
-//                    mp.start();
-//            }
-//        });
 
         mp.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override

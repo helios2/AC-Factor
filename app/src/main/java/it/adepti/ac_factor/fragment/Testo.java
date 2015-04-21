@@ -4,9 +4,7 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -21,8 +19,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.protocol.HTTP;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,8 +28,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import it.adepti.ac_factor.R;
+import it.adepti.ac_factor.SplashScreen;
 import it.adepti.ac_factor.utils.CheckConnectivity;
-import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
 
 public class Testo extends Fragment {
@@ -44,8 +40,7 @@ public class Testo extends Fragment {
     private ProgressDialog mProgressDialog;
     // File downloaded on device
     private File downloadedFileOnDevice;
-    // String for today
-    private String todayString;
+    private String stringDownloadedFileOnDevice;
     // String for URL download
     private String downloadTextURL;
     // Media state
@@ -75,39 +70,18 @@ public class Testo extends Fragment {
         // Initialize Media State
         mediaState = Environment.getExternalStorageState();
 
-        // Initialize todayString in a format ggMMyy
-        todayString = FilesSupport.dateTodayToString();
+        // Retrieve bundle's arguments
+        Bundle bundle = this.getArguments();
 
         // Initialize directory in device to put the file. It depends from TodayString
-        downloadedFileOnDevice = new File(Environment.getExternalStorageDirectory().toString() +
-                Constants.APP_ROOT_FOLDER +
-                "/" + todayString +
-                Constants.TEXT_RESOURCE +
-                todayString +
-                Constants.TEXT_EXTENSION);
+        stringDownloadedFileOnDevice = bundle.getString(SplashScreen.EXTRA_TEXT_DEVICE);
+        downloadedFileOnDevice = new File(stringDownloadedFileOnDevice);
 
         // Initialize directory for download the file. It depends from todayString
-        downloadTextURL = new String(Constants.DOMAIN +
-                                    todayString +
-                                    Constants.TEXT_RESOURCE +
-                                    todayString +
-                                    Constants.TEXT_EXTENSION);
+        downloadTextURL = bundle.getString(SplashScreen.EXTRA_TEXT_URL);
 
         // Initialize already shown
         alreadyShown = false;
-
-        //-----------------------------------------------------
-        // REGISTERING RECEIVER
-        //-----------------------------------------------------
-        networkStateReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.d("Receiver", "Called onReceive");
-                downloadTodayText();
-            }
-        };
-
-        filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 
     }
 
@@ -116,13 +90,6 @@ public class Testo extends Fragment {
         Log.d("LifeCycle", "Testo onCreateView");
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
-        Log.d("Media", mediaState);
-
-        if(savedInstanceState != null){
-            downloadedFileOnDevice = new File(savedInstanceState.getString("downloadFile"));
-            downloadTextURL = savedInstanceState.getString("downloadUrl");
-            alreadyShown = savedInstanceState.getBoolean("alreadyShown");
-        }
 
         downloadTodayText();
 
@@ -131,9 +98,6 @@ public class Testo extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(downloadedFileOnDevice != null) outState.putString("downloadFile", downloadedFileOnDevice.toString());
-        if(downloadTextURL != null) outState.putString("downloadUrl", downloadTextURL);
-        outState.putBoolean("alreadyShown", alreadyShown);
         super.onSaveInstanceState(outState);
     }
 
@@ -153,14 +117,12 @@ public class Testo extends Fragment {
     @Override
     public void onPause() {
         Log.d("LifeCycle", "Testo onPause");
-        getActivity().unregisterReceiver(networkStateReceiver);
         super.onPause();
     }
 
     @Override
     public void onResume() {
         Log.d("LifeCycle", "Testo onResume");
-        getActivity().registerReceiver(networkStateReceiver,filter);
         super.onResume();
     }
 
@@ -199,7 +161,7 @@ public class Testo extends Fragment {
                     Toast.makeText(getActivity(), getResources().getString(R.string.external_memory_problem), Toast.LENGTH_SHORT).show();
                 }
             } else {
-//                Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
             }
         } else {
             mTextView.setText(
@@ -222,8 +184,7 @@ public class Testo extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // take CPU lock to prevent CPU from going off if the user
-            // presses the power button during download
+            // take CPU lock to prevent CPU from going off if the user presses the power button during download
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
             mWakeLock.acquire();

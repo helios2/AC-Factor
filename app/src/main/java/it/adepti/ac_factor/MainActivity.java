@@ -61,6 +61,11 @@ public class MainActivity extends FragmentActivity {
     private boolean testoVisible;
     private boolean videoVisible;
 
+    // Bundle Extras
+    private String downloadTextURL;
+    private String streamingVideoURL;
+    private String stringDownloadedFileOnDevice;
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,12 @@ public class MainActivity extends FragmentActivity {
         Log.d(TAG, "testoVisible = " + testoVisible);
         videoVisible = intent.getBooleanExtra(SplashScreen.EXTRA_VIDEO, videoVisible);
         Log.d(TAG, "videoVisible = " + videoVisible);
+
+        /** Extras */
+        downloadTextURL = intent.getStringExtra(SplashScreen.EXTRA_TEXT_URL);
+        streamingVideoURL = intent.getStringExtra(SplashScreen.EXTRA_VIDEO_URL);
+        stringDownloadedFileOnDevice = intent.getStringExtra(SplashScreen.EXTRA_TEXT_DEVICE);
+
 
         /** Create Root Directory */
         File rootDirectory = new File(Environment.getExternalStorageDirectory().toString() + "/acfactor");
@@ -189,12 +200,21 @@ public class MainActivity extends FragmentActivity {
                 PAGE_COUNT++;
                 titles.add(getResources().getString(R.string.tab_testo).toUpperCase());
                 fragments.add(testo);
+
+                Bundle args = new Bundle();
+                args.putString(SplashScreen.EXTRA_TEXT_URL, downloadTextURL);
+                args.putString(SplashScreen.EXTRA_TEXT_DEVICE, stringDownloadedFileOnDevice);
+                fragments.get(fragments.indexOf(testo)).setArguments(args);
             }
 
             if (videoVisible){
                 PAGE_COUNT++;
                 titles.add(getResources().getString(R.string.tab_video).toUpperCase());
                 fragments.add(video);
+
+                Bundle args = new Bundle();
+                args.putString(SplashScreen.EXTRA_VIDEO_URL, streamingVideoURL);
+                fragments.get(fragments.indexOf(video)).setArguments(args);
             }
 
             titles.add(getResources().getString(R.string.tab_concorso).toUpperCase());

@@ -47,6 +47,7 @@ public class SplashScreen extends Activity {
     // Strings
     private String downloadTextURL;
     private String streamingVideoURL;
+    private String stringDownloadedFileOnDevice;
     // Files existence on server
     private boolean txtExistence;
     private boolean vidExistence;
@@ -55,6 +56,9 @@ public class SplashScreen extends Activity {
     // Intents constants
     public static final String EXTRA_TEXT = "testoVisible";
     public static final String EXTRA_VIDEO = "videoVisible";
+    public static final String EXTRA_TEXT_URL = "textUrl";
+    public static final String EXTRA_VIDEO_URL = "videoUrl";
+    public static final String EXTRA_TEXT_DEVICE = "textDevice";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +95,13 @@ public class SplashScreen extends Activity {
                 todayString +
                 Constants.VIDEO_EXTENSION);
         // Initalize Text File Downloaded
-        downloadedFileOnDevice = new File(Environment.getExternalStorageDirectory().toString() +
+        stringDownloadedFileOnDevice = new String(Environment.getExternalStorageDirectory().toString() +
                 Constants.APP_ROOT_FOLDER +
                 "/" + todayString +
                 Constants.TEXT_RESOURCE +
                 todayString +
                 Constants.TEXT_EXTENSION);
+        downloadedFileOnDevice = new File(stringDownloadedFileOnDevice);
 
         Thread mythread = new Thread() {
             public void run() {
@@ -150,6 +155,11 @@ public class SplashScreen extends Activity {
         Intent intent = new Intent(SplashScreen.this, MainActivity.class);
         intent.putExtra(EXTRA_TEXT, txtExistence);
         intent.putExtra(EXTRA_VIDEO, vidExistence);
+
+        intent.putExtra(EXTRA_TEXT_URL, downloadTextURL);
+        intent.putExtra(EXTRA_VIDEO_URL, streamingVideoURL);
+        intent.putExtra(EXTRA_TEXT_DEVICE, stringDownloadedFileOnDevice);
+
         startActivity(intent);
         finish();
     }
