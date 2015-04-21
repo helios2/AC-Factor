@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import it.adepti.ac_factor.R;
 
-public class Concorso extends Fragment {
+public class Countdown extends Fragment {
     private TextView mTextView;
     private CountDownTimer countDownTimer;
     private GregorianCalendar toDate = new GregorianCalendar(2015,4,10);
@@ -54,8 +54,9 @@ public class Concorso extends Fragment {
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);
                 String countdown = date.getDate() + " d " + date.getHours() + " h " + date.getMinutes() + " m " + date.getSeconds() + " s";
-                mTextView.setText("\nCountdown\n" + countdown);
+                mTextView.setText("Countdown\n" + countdown);
                 mTextView.setTypeface(typeface);
+                mTextView.setTextSize(getResources().getDimension(R.dimen.countdown_size));
             }
 
             public void onFinish() {

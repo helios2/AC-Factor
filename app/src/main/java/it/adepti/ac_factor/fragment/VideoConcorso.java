@@ -17,7 +17,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.youtube.DeveloperKey;
 
-public class Concorso_YouTube extends Fragment {
+public class VideoConcorso extends Fragment {
 
     YouTubePlayerSupportFragment youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
     private String playListUrl = "insertHere"; //TODO playlist url
@@ -34,7 +34,7 @@ public class Concorso_YouTube extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("LifeCycle", "Concorso_YouTube onCreateView");
-        View v = inflater.inflate(R.layout.fragments_youtube, container, false);
+        View v = inflater.inflate(R.layout.fragment_youtube, container, false);
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.youtube_fragment, youTubePlayerFragment).commit();

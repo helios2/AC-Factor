@@ -1,55 +1,30 @@
 package it.adepti.ac_factor;
 
-import android.annotation.TargetApi;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTabHost;
 
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.adepti.ac_factor.fragment.Audio;
-import it.adepti.ac_factor.fragment.Concorso;
-import it.adepti.ac_factor.fragment.Concorso_YouTube;
+import it.adepti.ac_factor.fragment.Countdown;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
-import it.adepti.ac_factor.push_notification.BootNotificationReceiver;
-import it.adepti.ac_factor.push_notification.NotificationService;
-import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.FilesSupport;
-import it.adepti.ac_factor.utils.RemoteServer;
 
 public class MainActivity extends FragmentActivity {
 
@@ -183,7 +158,7 @@ public class MainActivity extends FragmentActivity {
         // Fragment
         private Testo testo = new Testo();
         private Video video = new Video();
-        private Concorso concorso = new Concorso();
+        private Countdown countdown = new Countdown();
 
         // Titles
         private List<String> titles = new ArrayList<>();
@@ -218,7 +193,7 @@ public class MainActivity extends FragmentActivity {
             }
 
             titles.add(getResources().getString(R.string.tab_concorso).toUpperCase());
-            fragments.add(concorso);
+            fragments.add(countdown);
 
         }
 

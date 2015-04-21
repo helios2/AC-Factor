@@ -2,4 +2,6 @@
 <resources>
     <dimen name="tab_text_size">8dp</dimen>
     <dimen name="info_audio">12sp</dimen>
+    <dimen name="countdown_size">30sp</dimen>
+
 </resources>
