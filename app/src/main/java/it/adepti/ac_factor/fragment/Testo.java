@@ -32,6 +32,7 @@ import it.adepti.ac_factor.utils.FilesSupport;
 
 public class Testo extends Fragment {
 
+    private final String TAG = "Testo";
     // Text field where the downloaded text will appear.
     private TextView mTextView;
     // Progress bar for trace download.
@@ -130,9 +131,11 @@ public class Testo extends Fragment {
     private void downloadTodayText() {
         //TODO Rivedere l'ordine dei controlli
         if (!downloadedFileOnDevice.exists()) {
+            Log.d(TAG, "File Not Exist");
             if (connectivityManager.isConnected()) {
+                Log.d(TAG, "Device Is Connected");
                 if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
-
+                    Log.d(TAG, "Media Is Mounted");
                     // Progress dialog for download
                     mProgressDialog = new ProgressDialog(getActivity());
                     mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
@@ -152,15 +155,23 @@ public class Testo extends Fragment {
                         }
                     });
                 } else {
+                    Log.d(TAG, "Media UnMounted");
                     Toast.makeText(getActivity(), getResources().getString(R.string.external_memory_problem), Toast.LENGTH_SHORT).show();
                 }
             } else {
+                Log.d(TAG, "Not Connected");
                 Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
             }
         } else {
-            mTextView.setText(
-                    Html.fromHtml(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString())));
-            mTextView.setMovementMethod(LinkMovementMethod.getInstance());
+            Log.d(TAG, "File Exist");
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mTextView.setText(
+                            Html.fromHtml(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString())));
+                    mTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                }
+            });
         }
     }
 
@@ -277,6 +288,7 @@ public class Testo extends Fragment {
             else {
                 Toast.makeText(context, getResources().getString(R.string.resource_downloaded),
                         Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "File Scaricato");
                 mTextView.setText(
                         Html.fromHtml(FilesSupport.readTextFromFile(downloadedFileOnDevice.toString())));
                 mTextView.setMovementMethod(LinkMovementMethod.getInstance());

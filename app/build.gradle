@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "it.adepti.ac_factor"
-        minSdkVersion 15
-        targetSdkVersion 21
+        minSdkVersion 10
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }

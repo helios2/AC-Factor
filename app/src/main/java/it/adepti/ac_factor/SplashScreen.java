@@ -132,10 +132,16 @@ public class SplashScreen extends Activity {
                         }
                     } else {
                         Log.d(TAG, "Connection OK");
-                        // TODO: possibile passare le stringhe con intent
+
+//                        CheckFileExistence checkFileExistence = new CheckFileExistence(downloadTextURL, streamingVideoURL);
+//                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+//                            checkFileExistence.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                        }else{
+//                            checkFileExistence.execute();
+//                        }
                         // Check Existence On Server
                         CheckFileExistence checkFileExistence = new CheckFileExistence(downloadTextURL, streamingVideoURL);
-                        checkFileExistence.execute();
+                        checkFileExistence.run();
                     }
                 }
             }
@@ -184,23 +190,65 @@ public class SplashScreen extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class CheckFileExistence extends AsyncTask {
+//    private class CheckFileExistence extends AsyncTask {
+//
+//        private RemoteServer remoteServer = new RemoteServer();
+//        private String urlTxt;
+//        private String urlVid;
+//
+//        public CheckFileExistence(String url_txt, String url_vid){
+//            this.urlTxt = url_txt;
+//            this.urlVid = url_vid;
+//        }
+//
+//        @Override
+//        protected Object doInBackground(Object[] params) {
+//            Log.d("LifeCycle", "SplashScreen doInBackground");
+//
+//            // Video Check
+//            if(remoteServer.checkFileExistenceOnServer(urlVid)){
+//                vidExistence = true;
+//                Log.d(TAG, "vidExistence set to true");
+//            } else {
+//                vidExistence = false;
+//                Log.d(TAG, "vidExistence set to false");
+//            }
+//
+//            // Testo Check
+//            if(remoteServer.checkFileExistenceOnServer(urlTxt)){
+//                txtExistence = true;
+//                Log.d(TAG, "txtExistence set to true");
+//            } else {
+//                txtExistence = false;
+//                Log.d(TAG, "txtExistence set to false");
+//            }
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Object o) {
+//            super.onPostExecute(o);
+//            Log.d("LifeCycle", "SplashScreen onPostExecute");
+//            // Intent alla MainActivity
+//            intentMainActivity();
+//        }
+//    }
+    private class CheckFileExistence extends Thread {
 
         private RemoteServer remoteServer = new RemoteServer();
         private String urlTxt;
         private String urlVid;
 
-        public CheckFileExistence(String url_txt, String url_vid){
+        public CheckFileExistence(String url_txt, String url_vid) {
             this.urlTxt = url_txt;
             this.urlVid = url_vid;
         }
 
         @Override
-        protected Object doInBackground(Object[] params) {
-            Log.d("LifeCycle", "SplashScreen doInBackground");
-
+        public void run() {
             // Video Check
-            if(remoteServer.checkFileExistenceOnServer(urlVid)){
+            if (remoteServer.checkFileExistenceOnServer(urlVid)) {
                 vidExistence = true;
                 Log.d(TAG, "vidExistence set to true");
             } else {
@@ -209,7 +257,7 @@ public class SplashScreen extends Activity {
             }
 
             // Testo Check
-            if(remoteServer.checkFileExistenceOnServer(urlTxt)){
+            if (remoteServer.checkFileExistenceOnServer(urlTxt)) {
                 txtExistence = true;
                 Log.d(TAG, "txtExistence set to true");
             } else {
@@ -217,15 +265,11 @@ public class SplashScreen extends Activity {
                 Log.d(TAG, "txtExistence set to false");
             }
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
             Log.d("LifeCycle", "SplashScreen onPostExecute");
             // Intent alla MainActivity
             intentMainActivity();
+
+            super.run();
         }
     }
 }

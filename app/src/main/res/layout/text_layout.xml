@@ -7,18 +7,17 @@
     android:background="#eaecee"
     android:theme="@style/Theme.Acfactortheme">
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView" >
 
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="left|center_vertical"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#ff222222" />
-    </ScrollView>
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:ellipsize="none"
+        android:gravity="left|center_vertical"
+        android:maxLines="400"
+        android:scrollHorizontally="false"
+        android:singleLine="false"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#ff222222"/>
 
 </LinearLayout>
