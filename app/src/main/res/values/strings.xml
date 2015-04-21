@@ -31,5 +31,7 @@
     <string name="pushNotificationPreference">prefPushNotify</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="txt_no_connect">Assicurarsi di essere connessi ad internet</string>
+    <string name="txt_retry">Riprova</string>
 
 </resources>

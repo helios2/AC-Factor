@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -46,9 +48,15 @@ public class SplashScreen extends Activity {
     // Check Connectivity
     private CheckConnectivity checkConnectivity = new CheckConnectivity(this);
 
+    // Strings
+    private String downloadTextURL;
+    private String streamingVideoURL;
+
     // Files existence
     private boolean txtExistence;
     private boolean vidExistence;
+    // File downloaded on device
+    private File downloadedFileOnDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +78,30 @@ public class SplashScreen extends Activity {
         // Set animation
         splashView.setAnimation(animFadein);
 
+        // Today Strings
+        // Initialize todayString in a format ggMMyy
+        String todayString = FilesSupport.dateTodayToString();
+        // Initialize directory for download the file. It depends from todayString
+        downloadTextURL = new String(Constants.DOMAIN +
+                todayString +
+                Constants.TEXT_RESOURCE +
+                todayString +
+                Constants.TEXT_EXTENSION);
+        // Initialize directory for download the file. It depends from todayString
+        streamingVideoURL = new String(Constants.DOMAIN +
+                todayString +
+                Constants.VIDEO_RESOURCE +
+                todayString +
+                Constants.VIDEO_EXTENSION);
+
+        // Initalize File Testo Downloaded
+        downloadedFileOnDevice = new File(Environment.getExternalStorageDirectory().toString() +
+                Constants.APP_ROOT_FOLDER +
+                "/" + todayString +
+                Constants.TEXT_RESOURCE +
+                todayString +
+                Constants.TEXT_EXTENSION);
+
         Thread mythread = new Thread() {
             public void run() {
                 try {
@@ -89,25 +121,17 @@ public class SplashScreen extends Activity {
                     // Connectivity Status
                     if(!checkConnectivity.isConnected()){
                         Log.d(TAG, "No connection");
-                        //Toast.makeText(this, getResources().getString(R.string.text_noConnection), Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(SplashScreen.this, NoConnectionActivity.class);
-                        startActivity(intent);
-                        finish();
+                        // Search text File Existence on SDCard
+                        if(downloadedFileOnDevice.exists()){
+                            Log.d(TAG, "File exists");
+                            txtExistence = true;
+                            intentMainActivity();
+                        } else {
+                            Log.d(TAG, "File doesn't exists");
+                            intentNoConnection();
+                        }
                     } else {
-                        // Initialize todayString in a format ggMMyy
-                        String todayString = FilesSupport.dateTodayToString();
-                        // Initialize directory for download the file. It depends from todayString
-                        String downloadTextURL = new String(Constants.DOMAIN +
-                                todayString +
-                                Constants.TEXT_RESOURCE +
-                                todayString +
-                                Constants.TEXT_EXTENSION);
-                        // Initialize directory for download the file. It depends from todayString
-                        String streamingVideoURL = new String(Constants.DOMAIN +
-                                todayString +
-                                Constants.VIDEO_RESOURCE +
-                                todayString +
-                                Constants.VIDEO_EXTENSION);
+
                         // TODO: possibile passare le stringhe con intent
                         // Check Existence
                         CheckFileExistence checkFileExistence = new CheckFileExistence(downloadTextURL,streamingVideoURL);
@@ -119,6 +143,19 @@ public class SplashScreen extends Activity {
         mythread.start();
     }
 
+    private void intentNoConnection(){
+        Intent intent = new Intent(SplashScreen.this, NoConnectionActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void intentMainActivity(){
+        Intent intent = new Intent(SplashScreen.this, MainActivity.class);
+        intent.putExtra("testoVisible",txtExistence);
+        intent.putExtra("videoVisible",vidExistence);
+        startActivity(intent);
+        finish();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -220,11 +257,7 @@ public class SplashScreen extends Activity {
 //            }
 
             // Intent alla MainActivity
-            Intent intent = new Intent(SplashScreen.this, MainActivity.class);
-            intent.putExtra("testoVisible",txtExistence);
-            intent.putExtra("videoVisible",vidExistence);
-            startActivity(intent);
-            finish();
+            intentMainActivity();
         }
     }
 }

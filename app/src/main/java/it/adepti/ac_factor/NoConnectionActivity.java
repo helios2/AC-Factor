@@ -52,9 +52,9 @@ public class NoConnectionActivity extends Activity{
         Drawable drawable = getResources().getDrawable(R.drawable.error);
         imageView.setImageDrawable(drawable);
 
-        textView.setText("Assicurarsi di essere connessi ad internet");
+        textView.setText(getString(R.string.txt_no_connect));
 
-        button.setText("Continua");
+        button.setText(getString(R.string.txt_retry));
 
         button.setOnTouchListener(new View.OnTouchListener() {
             @Override
