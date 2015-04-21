@@ -1,10 +1,8 @@
 package it.adepti.ac_factor.fragment;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -45,12 +43,8 @@ public class Testo extends Fragment {
     private String downloadTextURL;
     // Media state
     private String mediaState;
-    // Broadcast Receiver
-    private BroadcastReceiver networkStateReceiver;
     // Check Connectivity Manager
     private CheckConnectivity connectivityManager;
-    // Intent Filter
-    private IntentFilter filter;
     // Dialog Already Shown
     private boolean alreadyShown;
 

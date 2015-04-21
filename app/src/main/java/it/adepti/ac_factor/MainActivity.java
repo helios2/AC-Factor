@@ -66,7 +66,7 @@ public class MainActivity extends FragmentActivity {
     private String streamingVideoURL;
     private String stringDownloadedFileOnDevice;
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("LifeCycle", "MainActivity onCreate");
