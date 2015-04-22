@@ -19,8 +19,8 @@ import android.util.Log;
 
 import java.io.File;
 
-import it.adepti.ac_factor.MainActivity;
 import it.adepti.ac_factor.R;
+import it.adepti.ac_factor.SplashScreen;
 import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
 import it.adepti.ac_factor.utils.RemoteServer;
@@ -199,10 +199,9 @@ public class NotificationService extends Service{
                 .setSmallIcon(R.drawable.ic_stat_notification_icon)
                 .setContentTitle(getResources().getString(R.string.app_name))
                 .setContentText(message);
-        Intent resultIntent = new Intent(this, MainActivity.class);
+        Intent resultIntent = new Intent(this, SplashScreen.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // TODO controllare che sia giusto mettere MainActivity
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(SplashScreen.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);

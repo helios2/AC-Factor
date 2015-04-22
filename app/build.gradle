@@ -8,8 +8,8 @@ android {
         applicationId "it.adepti.ac_factor"
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "1.1.2"
     }
     buildTypes {
         release {
