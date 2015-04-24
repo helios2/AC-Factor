@@ -41,6 +41,8 @@ public class NotificationService extends Service{
     private String mediaState;
     // Receiver State
     private boolean isRegistered = false;
+    // Alarm notification
+    private DailyNotifier dailyNotifier;
 
     //=============================================
     // ASYNC TASK
@@ -91,6 +93,9 @@ public class NotificationService extends Service{
 
         // Initialize Media State
         mediaState = Environment.getExternalStorageState();
+
+        dailyNotifier = new DailyNotifier();
+        dailyNotifier.setAlarm(NotificationService.this);
 
         if(isOnline()){
             // Connection is already UP
@@ -194,11 +199,12 @@ public class NotificationService extends Service{
      * Create a notification on android notification bar
      * @param message Message to display into notification.
      */
-    private void createNotification(String message) {
+    public void createNotification(String message) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_notification_icon)
                 .setContentTitle(getResources().getString(R.string.app_name))
-                .setContentText(message);
+                .setContentText(message)
+                .setAutoCancel(true);
         Intent resultIntent = new Intent(this, SplashScreen.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(SplashScreen.class);
@@ -209,6 +215,10 @@ public class NotificationService extends Service{
         mNotificationManager.notify(R.id.startupNotificationID, mBuilder.build());
     }
 
+    /**
+     * Check if connection is up
+     * @return true if connection is up, false instead.
+     */
     private boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

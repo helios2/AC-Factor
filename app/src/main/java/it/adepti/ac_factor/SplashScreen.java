@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 
 import java.io.File;
 
+import it.adepti.ac_factor.push_notification.NotificationService;
 import it.adepti.ac_factor.utils.CheckConnectivity;
 import it.adepti.ac_factor.utils.Constants;
 import it.adepti.ac_factor.utils.FilesSupport;
@@ -190,50 +191,6 @@ public class SplashScreen extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-//    private class CheckFileExistence extends AsyncTask {
-//
-//        private RemoteServer remoteServer = new RemoteServer();
-//        private String urlTxt;
-//        private String urlVid;
-//
-//        public CheckFileExistence(String url_txt, String url_vid){
-//            this.urlTxt = url_txt;
-//            this.urlVid = url_vid;
-//        }
-//
-//        @Override
-//        protected Object doInBackground(Object[] params) {
-//            Log.d("LifeCycle", "SplashScreen doInBackground");
-//
-//            // Video Check
-//            if(remoteServer.checkFileExistenceOnServer(urlVid)){
-//                vidExistence = true;
-//                Log.d(TAG, "vidExistence set to true");
-//            } else {
-//                vidExistence = false;
-//                Log.d(TAG, "vidExistence set to false");
-//            }
-//
-//            // Testo Check
-//            if(remoteServer.checkFileExistenceOnServer(urlTxt)){
-//                txtExistence = true;
-//                Log.d(TAG, "txtExistence set to true");
-//            } else {
-//                txtExistence = false;
-//                Log.d(TAG, "txtExistence set to false");
-//            }
-//
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Object o) {
-//            super.onPostExecute(o);
-//            Log.d("LifeCycle", "SplashScreen onPostExecute");
-//            // Intent alla MainActivity
-//            intentMainActivity();
-//        }
-//    }
     private class CheckFileExistence extends Thread {
 
         private RemoteServer remoteServer = new RemoteServer();

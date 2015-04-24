@@ -26,6 +26,7 @@
 
     <!-- Notification Service -->
     <string name="text_newContent">Nuovi contenuti disponibili!</string>
+    <string name="text_dailyNotification">Hai visualizzato i contenuti di oggi?</string>
 
     <!-- String Ids -->
     <string name="pushNotificationPreference">prefPushNotify</string>

@@ -1,8 +1,6 @@
 package it.adepti.ac_factor.fragment;
 
-import android.annotation.TargetApi;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -11,14 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
 
 import it.adepti.ac_factor.R;
 
@@ -31,7 +25,7 @@ public class Countdown extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d("LifeCycle", "Testo onCreate");
+        Log.d("LifeCycle", "Countdown onCreate");
         super.onCreate(savedInstanceState);
 
         typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/clock.ttf");
@@ -41,11 +35,11 @@ public class Countdown extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("LifeCycle", "Testo onCreateView");
+        Log.d("LifeCycle", "Countdown onCreateView");
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
 
-                // CountDown Timer
+        // CountDown Timer
         today = new GregorianCalendar();
         long countDownUtil = toDate.getTimeInMillis() - today.getTimeInMillis();
         //final SimpleDateFormat dataFormat = new SimpleDateFormat("dd Giorni\nhh Ore\nmm Minuti\nss Secondi");
@@ -56,7 +50,7 @@ public class Countdown extends Fragment {
                 String countdown = date.getDate() + " d " + date.getHours() + " h " + date.getMinutes() + " m " + date.getSeconds() + " s";
                 mTextView.setText("Countdown\n" + countdown);
                 mTextView.setTypeface(typeface);
-                mTextView.setTextSize(getResources().getDimension(R.dimen.countdown_size));
+                mTextView.setTextSize(getActivity().getResources().getDimension(R.dimen.countdown_size));
             }
 
             public void onFinish() {

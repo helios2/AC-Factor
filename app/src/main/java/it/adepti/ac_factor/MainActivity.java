@@ -24,6 +24,8 @@ import java.util.List;
 import it.adepti.ac_factor.fragment.Countdown;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
+import it.adepti.ac_factor.push_notification.DailyNotifier;
+import it.adepti.ac_factor.push_notification.NotificationService;
 import it.adepti.ac_factor.utils.FilesSupport;
 
 public class MainActivity extends FragmentActivity {
@@ -110,6 +112,11 @@ public class MainActivity extends FragmentActivity {
 
         if (requestCode == SETTINGS_RESULT){
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean prefPush = sharedPreferences.getBoolean("prefPushNotify", true);
+            if(!prefPush){
+                DailyNotifier dailyNotifier = new DailyNotifier();
+                dailyNotifier.cancelAlarm(getApplicationContext());
+            }
             Log.d(TAG, "Notifiche: " + sharedPreferences.getBoolean("prefPushNotify", true));
         }
     }

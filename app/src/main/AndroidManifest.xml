@@ -27,6 +27,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".push_notification.DailyNotifier"
+            android:enabled="true"
+            android:exported="false">
+
+        </receiver>
 
         <service android:name=".push_notification.NotificationService" />
 
