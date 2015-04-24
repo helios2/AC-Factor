@@ -38,6 +38,8 @@ public class Countdown extends Fragment {
         Log.d("LifeCycle", "Countdown onCreateView");
         View v = inflater.inflate(R.layout.text_layout, container, false);
         mTextView = (TextView) v.findViewById(R.id.text);
+        mTextView.setTypeface(typeface);
+        mTextView.setTextSize(getActivity().getResources().getDimension(R.dimen.countdown_size));
 
         // CountDown Timer
         today = new GregorianCalendar();
@@ -49,8 +51,6 @@ public class Countdown extends Fragment {
                 Date date = new Date(millisUntilFinished);
                 String countdown = date.getDate() + " d " + date.getHours() + " h " + date.getMinutes() + " m " + date.getSeconds() + " s";
                 mTextView.setText("Countdown\n" + countdown);
-                mTextView.setTypeface(typeface);
-                mTextView.setTextSize(getActivity().getResources().getDimension(R.dimen.countdown_size));
             }
 
             public void onFinish() {
