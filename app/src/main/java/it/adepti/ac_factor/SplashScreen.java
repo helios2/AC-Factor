@@ -121,26 +121,14 @@ public class SplashScreen extends Activity {
                     });
                     // Connectivity Status
                     if (!checkConnectivity.isConnected()) {
-                        Log.d(TAG, "No connection");
                         // Search text File Existence on SDCard
                         if (downloadedFileOnDevice.exists()) {
-                            Log.d(TAG, "File exists");
                             txtExistence = true;
                             intentMainActivity();
                         } else {
-                            Log.d(TAG, "File doesn't exists");
                             intentNoConnection();
                         }
                     } else {
-                        Log.d(TAG, "Connection OK");
-
-//                        CheckFileExistence checkFileExistence = new CheckFileExistence(downloadTextURL, streamingVideoURL);
-//                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
-//                            checkFileExistence.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//                        }else{
-//                            checkFileExistence.execute();
-//                        }
-                        // Check Existence On Server
                         CheckFileExistence checkFileExistence = new CheckFileExistence(downloadTextURL, streamingVideoURL);
                         checkFileExistence.run();
                     }
@@ -207,23 +195,18 @@ public class SplashScreen extends Activity {
             // Video Check
             if (remoteServer.checkFileExistenceOnServer(urlVid)) {
                 vidExistence = true;
-                Log.d(TAG, "vidExistence set to true");
             } else {
                 vidExistence = false;
-                Log.d(TAG, "vidExistence set to false");
             }
 
             // Testo Check
             if (remoteServer.checkFileExistenceOnServer(urlTxt)) {
                 txtExistence = true;
-                Log.d(TAG, "txtExistence set to true");
             } else {
                 txtExistence = false;
-                Log.d(TAG, "txtExistence set to false");
             }
 
             Log.d("LifeCycle", "SplashScreen onPostExecute");
-            // Intent alla MainActivity
             intentMainActivity();
 
             super.run();

@@ -25,6 +25,7 @@ import it.adepti.ac_factor.fragment.Countdown;
 import it.adepti.ac_factor.fragment.FB_Concorso;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
+import it.adepti.ac_factor.fragment.VideoConcorso;
 import it.adepti.ac_factor.push_notification.DailyNotifier;
 import it.adepti.ac_factor.push_notification.NotificationService;
 import it.adepti.ac_factor.utils.FilesSupport;

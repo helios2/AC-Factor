@@ -1,7 +1,5 @@
 package it.adepti.ac_factor.fragment;
 
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,13 +27,33 @@ public class FB_Concorso extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            WebView.class.getMethod("onResume").invoke(FB_View);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            WebView.class.getMethod("onPause").invoke(FB_View);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fb_concorso_layout, container, false);
 
         FB_View = (WebView) v.findViewById(R.id.fb_webView);
-        FB_View.setWebViewClient(new WebViewClient(){
+        FB_View.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url){
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
@@ -46,7 +64,16 @@ public class FB_Concorso extends Fragment {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setAllowFileAccess(true);
-        FB_View.loadUrl(pageURL);
+
+        String html = "";
+        html += "<html><body>";
+        html += "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/videoseries?list=PLNuxVPAQYaGVGCt_b8ZFiI7G1zPTwFnKe\" frameborder=\"0\" allowfullscreen></iframe>";
+        html += "</body></html>";
+
+//        FB_View.loadUrl(pageURL);
+        FB_View.loadUrl("https://m.youtube.com/watch?list=PLNuxVPAQYaGVGCt_b8ZFiI7G1zPTwFnKe&v=33z2N58HWXQ");
+//        FB_View.loadData(html, "text/html", null);
+
 
         return v;
     }
