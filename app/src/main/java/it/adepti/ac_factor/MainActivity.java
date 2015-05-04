@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.adepti.ac_factor.fragment.Countdown;
+import it.adepti.ac_factor.fragment.FB_Concorso;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
 import it.adepti.ac_factor.push_notification.DailyNotifier;
@@ -165,7 +166,8 @@ public class MainActivity extends FragmentActivity {
         // Fragment
         private Testo testo = new Testo();
         private Video video = new Video();
-        private Countdown countdown = new Countdown();
+        //private Countdown countdown = new Countdown();
+        private FB_Concorso countdown = new FB_Concorso();
 
         // Titles
         private List<String> titles = new ArrayList<>();
