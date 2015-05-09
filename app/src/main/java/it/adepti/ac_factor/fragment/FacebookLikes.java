@@ -177,6 +177,8 @@ public class FacebookLikes extends Fragment{
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+
+
     private void initializeFacebook() {
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         callbackManager = CallbackManager.Factory.create();

@@ -176,7 +176,6 @@ public class MainActivity extends FragmentActivity {
         // Page Count
         private int PAGE_COUNT = 1;
 
-
         public SampleFragmentPagerAdapter() {
             super(getSupportFragmentManager());
 
@@ -206,7 +205,6 @@ public class MainActivity extends FragmentActivity {
             PAGE_COUNT++;
             titles.add(getResources().getString(R.string.tab_concorso).toUpperCase());
             fragments.add(facebook);
-
         }
 
         @Override
@@ -226,6 +224,12 @@ public class MainActivity extends FragmentActivity {
                 return titles.get(position);
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 }
 

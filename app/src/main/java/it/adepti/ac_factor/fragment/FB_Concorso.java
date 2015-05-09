@@ -65,6 +65,7 @@ public class FB_Concorso extends Fragment {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setAllowFileAccess(true);
+
         if(Build.VERSION.SDK_INT >= 21) {
             webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
