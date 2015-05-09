@@ -181,7 +181,6 @@ public class SplashScreen extends Activity {
 
     private class CheckFileExistence extends Thread {
 
-        private RemoteServer remoteServer = new RemoteServer();
         private String urlTxt;
         private String urlVid;
 
@@ -193,20 +192,20 @@ public class SplashScreen extends Activity {
         @Override
         public void run() {
             // Video Check
-            if (remoteServer.checkFileExistenceOnServer(urlVid)) {
+            if (RemoteServer.checkFileExistenceOnServer(urlVid)) {
                 vidExistence = true;
             } else {
                 vidExistence = false;
             }
 
             // Testo Check
-            if (remoteServer.checkFileExistenceOnServer(urlTxt)) {
+            if (RemoteServer.checkFileExistenceOnServer(urlTxt)) {
                 txtExistence = true;
             } else {
                 txtExistence = false;
             }
 
-            Log.d("LifeCycle", "SplashScreen onPostExecute");
+            Log.d(TAG, "Lifecycle: SplashScreen onPostExecute");
             intentMainActivity();
 
             super.run();

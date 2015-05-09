@@ -1,5 +1,6 @@
 package it.adepti.ac_factor.fragment;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -64,16 +65,18 @@ public class FB_Concorso extends Fragment {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setAllowFileAccess(true);
+        if(Build.VERSION.SDK_INT >= 21) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
 
-        String html = "";
-        html += "<html><body>";
-        html += "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/videoseries?list=PLNuxVPAQYaGVGCt_b8ZFiI7G1zPTwFnKe\" frameborder=\"0\" allowfullscreen></iframe>";
-        html += "</body></html>";
-
-//        FB_View.loadUrl(pageURL);
         FB_View.loadUrl("https://m.youtube.com/watch?list=PLNuxVPAQYaGVGCt_b8ZFiI7G1zPTwFnKe&v=33z2N58HWXQ");
-//        FB_View.loadData(html, "text/html", null);
 
+//        String html = "";
+//        html += "<html><body>";
+//        html += "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/videoseries?list=PLNuxVPAQYaGVGCt_b8ZFiI7G1zPTwFnKe\" frameborder=\"0\" allowfullscreen></iframe>";
+//        html += "</body></html>";
+//        FB_View.loadUrl(pageURL);
+//        FB_View.loadData(html, "text/html", null);
 
         return v;
     }

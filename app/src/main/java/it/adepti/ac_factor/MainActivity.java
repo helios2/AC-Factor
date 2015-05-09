@@ -21,13 +21,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.adepti.ac_factor.fragment.Countdown;
 import it.adepti.ac_factor.fragment.FB_Concorso;
+import it.adepti.ac_factor.fragment.FacebookLikes;
 import it.adepti.ac_factor.fragment.Testo;
 import it.adepti.ac_factor.fragment.Video;
-import it.adepti.ac_factor.fragment.VideoConcorso;
 import it.adepti.ac_factor.push_notification.DailyNotifier;
-import it.adepti.ac_factor.push_notification.NotificationService;
 import it.adepti.ac_factor.utils.FilesSupport;
 
 public class MainActivity extends FragmentActivity {
@@ -168,7 +166,8 @@ public class MainActivity extends FragmentActivity {
         private Testo testo = new Testo();
         private Video video = new Video();
         //private Countdown countdown = new Countdown();
-        private FB_Concorso countdown = new FB_Concorso();
+        private FacebookLikes facebook = new FacebookLikes();
+        private FB_Concorso videoConcorso = new FB_Concorso();
 
         // Titles
         private List<String> titles = new ArrayList<>();
@@ -202,8 +201,11 @@ public class MainActivity extends FragmentActivity {
                 fragments.get(fragments.indexOf(video)).setArguments(args);
             }
 
+            titles.add("Video".toUpperCase());
+            fragments.add(videoConcorso);
+            PAGE_COUNT++;
             titles.add(getResources().getString(R.string.tab_concorso).toUpperCase());
-            fragments.add(countdown);
+            fragments.add(facebook);
 
         }
 

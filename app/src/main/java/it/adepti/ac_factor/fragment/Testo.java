@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.Executor;
 
 import it.adepti.ac_factor.R;
 import it.adepti.ac_factor.SplashScreen;
@@ -42,8 +43,6 @@ public class Testo extends Fragment {
     private String stringDownloadedFileOnDevice;
     // String for URL download
     private String downloadTextURL;
-    // Media state
-    private String mediaState;
     // Check Connectivity Manager
     private CheckConnectivity connectivityManager;
     // Dialog Already Shown
@@ -62,9 +61,6 @@ public class Testo extends Fragment {
         // Initialize Connectivity Manager
         connectivityManager = new CheckConnectivity(getActivity());
 
-        // Initialize Media State
-        mediaState = Environment.getExternalStorageState();
-
         // Retrieve bundle's arguments
         Bundle bundle = this.getArguments();
 
@@ -72,8 +68,12 @@ public class Testo extends Fragment {
         stringDownloadedFileOnDevice = bundle.getString(SplashScreen.EXTRA_TEXT_DEVICE);
         downloadedFileOnDevice = new File(stringDownloadedFileOnDevice);
 
+        Log.d(TAG, "Stringa File Su Dispositivo: " + stringDownloadedFileOnDevice);
+        Log.d(TAG, "External: " + Environment.getExternalStorageDirectory().toString());
+
         // Initialize directory for download the file. It depends from todayString
         downloadTextURL = bundle.getString(SplashScreen.EXTRA_TEXT_URL);
+        Log.d(TAG, "Risorsa: " +downloadTextURL);
 
         // Initialize already shown
         alreadyShown = false;
@@ -134,30 +134,24 @@ public class Testo extends Fragment {
             Log.d(TAG, "File Not Exist");
             if (connectivityManager.isConnected()) {
                 Log.d(TAG, "Device Is Connected");
-                if (mediaState.equals(Environment.MEDIA_MOUNTED)) {
-                    Log.d(TAG, "Media Is Mounted");
-                    // Progress dialog for download
-                    mProgressDialog = new ProgressDialog(getActivity());
-                    mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
-                    mProgressDialog.setIndeterminate(true);
-                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    mProgressDialog.setCancelable(true);
+                // Progress dialog for download
+                mProgressDialog = new ProgressDialog(getActivity());
+                mProgressDialog.setMessage(getResources().getString(R.string.text_downloadText));
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setCancelable(true);
 
-                    // execute this when the downloader must be fired
-                    final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
-                    downloadTextTask.execute(downloadTextURL);
-                    Log.d("Download", "Try to download " + downloadTextURL);
+                // execute this when the downloader must be fired
+                final DownloadTextTask downloadTextTask = new DownloadTextTask(getActivity());
+                downloadTextTask.execute(downloadTextURL);
+                Log.d("Download", "Try to download " + downloadTextURL);
 
-                    mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            downloadTextTask.cancel(true);
-                        }
-                    });
-                } else {
-                    Log.d(TAG, "Media UnMounted");
-                    Toast.makeText(getActivity(), getResources().getString(R.string.external_memory_problem), Toast.LENGTH_SHORT).show();
-                }
+                mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        downloadTextTask.cancel(true);
+                    }
+                });
             } else {
                 Log.d(TAG, "Not Connected");
                 Toast.makeText(getActivity(), getResources().getString(R.string.text_noConnection), Toast.LENGTH_SHORT).show();
@@ -206,7 +200,6 @@ public class Testo extends Fragment {
                 URL url = new URL(sUrl[0]);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
-
                 // Expect HTTP 200 OK
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                     resultCode = connection.getResponseCode();
@@ -221,7 +214,6 @@ public class Testo extends Fragment {
                 // Download the file
                 input = connection.getInputStream();
                 output = new FileOutputStream(downloadedFileOnDevice);
-
                 byte data[] = new byte[4096];
                 long total = 0;
                 int count;
@@ -284,6 +276,7 @@ public class Testo extends Fragment {
                 else
                     Toast.makeText(context, getResources().getString(R.string.server_response) + result,
                             Toast.LENGTH_SHORT).show();
+                Log.e(TAG, result);
             }
             else {
                 Toast.makeText(context, getResources().getString(R.string.resource_downloaded),

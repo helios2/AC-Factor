@@ -2,6 +2,7 @@
 
     <!-- Generali -->
     <string name="app_name">The AC Factor</string>
+    <string name="facebook_app_id">638582339574937</string>
 
     <!-- Menù Strings -->
     <string name="action_settings">Impostazioni</string>
@@ -23,15 +24,18 @@
     <string name="no_video_content">Nessun contenuto video, oggi.</string>
     <string name="server_response">Risposta server:</string>
     <string name="resource_downloaded">File scaricato</string>
+    <string name="text_hello">Ciao, </string>
+    <string name="text_not_logged_in">Non sei loggato </string>
+    <string name="text_list_not_logged_in">Effettua l\'accesso per vedere la lista </string>
 
     <!-- Notification Service -->
     <string name="text_newContent">Nuovi contenuti disponibili!</string>
-    <string name="text_dailyNotification">Hai visualizzato i contenuti di oggi?</string>
+    <string name="text_dailyNotification">Anche oggi tanti nuovi video!</string>
 
     <!-- String Ids -->
     <string name="pushNotificationPreference">prefPushNotify</string>
 
-    <string name="hello_world">Hello world!</string>
+    <!-- No Connection Activity -->
     <string name="txt_no_connect">Assicurarsi di essere connessi ad internet</string>
     <string name="txt_retry">Riprova</string>
 
