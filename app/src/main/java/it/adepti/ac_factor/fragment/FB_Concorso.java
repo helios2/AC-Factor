@@ -25,9 +25,6 @@ public class FB_Concorso extends Fragment {
     // Layout Object
     private WebView FB_View;
 
-    // WebPage URL
-    private String pageURL = "http://androidprova.altervista.org/Concorso/facebook_posts.html";
-
     // YouTubePlayer Fragment
     private YouTubePlayerSupportFragment youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
     private YouTubePlayer yTubePlayer;
@@ -86,7 +83,7 @@ public class FB_Concorso extends Fragment {
                 webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
             }
 
-            FB_View.loadUrl("https://m.youtube.com/watch?list=PLNuxVPAQYaGVGCt_b8ZFiI7G1zPTwFnKe&v=33z2N58HWXQ");
+            FB_View.loadUrl("https://www.youtube.com/playlist?list=PLAr63S_mF9Ju44OazwxlMElaB6rQbjTRq");
         } else {
             v = inflater.inflate(R.layout.fragment_youtube, container, false);
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
@@ -96,7 +93,7 @@ public class FB_Concorso extends Fragment {
                 @Override
                 public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                     yTubePlayer = youTubePlayer;
-                    yTubePlayer.loadPlaylist("PL55713C70BA91BD6E");
+                    yTubePlayer.loadPlaylist("PLAr63S_mF9Ju44OazwxlMElaB6rQbjTRq");
                     yTubePlayer.play();
                 }
 
@@ -106,13 +103,6 @@ public class FB_Concorso extends Fragment {
                 }
             });
         }
-
-//        String html = "";
-//        html += "<html><body>";
-//        html += "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/videoseries?list=PLNuxVPAQYaGVGCt_b8ZFiI7G1zPTwFnKe\" frameborder=\"0\" allowfullscreen></iframe>";
-//        html += "</body></html>";
-//        FB_View.loadUrl(pageURL);
-//        FB_View.loadData(html, "text/html", null);
 
         return v;
     }

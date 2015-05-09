@@ -146,7 +146,7 @@ public class FacebookLikes extends Fragment{
                 });
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "posts.since(2015-04-02){name,caption,actions}");
+        parameters.putString("fields", "posts.since(2015-05-10){caption,name,actions}");
         graphRequest.setParameters(parameters);
         videoList.clear();
         VideoItem noVideos = new VideoItem(getResources().getString(R.string.text_list_not_logged_in), NOLINK);
@@ -201,7 +201,7 @@ public class FacebookLikes extends Fragment{
                             });
 
                     Bundle parameters = new Bundle();
-                    parameters.putString("fields", "posts.since(2015-04-02){name,caption,actions}");
+                    parameters.putString("fields", "posts.since(2015-05-10){caption,name,actions}");
                     graphRequest.setParameters(parameters);
                     videoList.clear();
                     videoList.notifyDataSetChanged();
