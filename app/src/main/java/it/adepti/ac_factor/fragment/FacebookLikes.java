@@ -48,8 +48,6 @@ public class FacebookLikes extends Fragment{
     private ProfileTracker profileTracker;
     private AccessTokenTracker accessTokenTracker;
     private LoginButton loginButton;
-    private AccessToken currentToken;
-    private Profile currentLogInProfile;
 
     //===================================
     // ACTIVITY VIEWS
@@ -108,14 +106,14 @@ public class FacebookLikes extends Fragment{
         listView.setAdapter(videoList);
         // Finding TextView
         textUser = (TextView)v.findViewById(R.id.txtUserLogeedIn);
-        // Retrieving Facebook User Info
-        currentToken = AccessToken.getCurrentAccessToken();
-        currentLogInProfile = Profile.getCurrentProfile();
-        if(currentLogInProfile != null) {
+
+        if(Profile.getCurrentProfile() != null) {
             textUser.setText(getActivity().getResources().getString(R.string.text_hello) + " " +
-                    currentLogInProfile.getName());
+                    Profile.getCurrentProfile().getName());
         }else{
             textUser.setText(getResources().getString(R.string.text_not_logged_in));
+            videoList.clear();
+            videoList.notifyDataSetChanged();
         }
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -146,12 +144,9 @@ public class FacebookLikes extends Fragment{
                 });
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "posts.since(2015-05-10){caption,name,actions}");
+        parameters.putString("fields", "posts.since(2015-05-10){type,name,actions}");
         graphRequest.setParameters(parameters);
-        videoList.clear();
-        VideoItem noVideos = new VideoItem(getResources().getString(R.string.text_list_not_logged_in), NOLINK);
-        videoList.add(noVideos);
-        videoList.notifyDataSetChanged();
+
         if(checkConnectivity.isConnected()) {
             graphRequest.executeAsync();
         }
@@ -188,7 +183,6 @@ public class FacebookLikes extends Fragment{
             protected void onCurrentAccessTokenChanged(
                     AccessToken oldAccessToken,
                     AccessToken currentAccessToken) {
-                currentToken = currentAccessToken;
                 if (currentAccessToken != null){
                     GraphRequest graphRequest = GraphRequest.newGraphPathRequest(
                             AccessToken.getCurrentAccessToken(),
@@ -201,7 +195,7 @@ public class FacebookLikes extends Fragment{
                             });
 
                     Bundle parameters = new Bundle();
-                    parameters.putString("fields", "posts.since(2015-05-10){caption,name,actions}");
+                    parameters.putString("fields", "posts.since(2015-05-10){type,name,actions}");
                     graphRequest.setParameters(parameters);
                     videoList.clear();
                     videoList.notifyDataSetChanged();
@@ -216,19 +210,22 @@ public class FacebookLikes extends Fragment{
             protected void onCurrentProfileChanged(
                     Profile oldProfile,
                     Profile currentProfile) {
-                currentLogInProfile = currentProfile;
-                if(currentLogInProfile != null) {
+                if(currentProfile != null) {
                     textUser.setText(getActivity().getResources().getString(R.string.text_hello) + " " +
-                            currentLogInProfile.getName());
+                            currentProfile.getName());
                 }else{
-                    textUser.setText("Non sei loggato");
+                    textUser.setText(getResources().getString(R.string.text_not_logged_in));
+                    videoList.clear();
+                    videoList.notifyDataSetChanged();
                 }
             }
         };
     }
 
     private void videosRequest(GraphResponse response) {
-        Log.d("JSON", response.toString());
+        videoList.clear();
+        videoList.notifyDataSetChanged();
+//        Log.d("JSON", response.toString());
         JSONObject object = response.getJSONObject();
         try {
             if(object != null && object.has("posts")) {
@@ -237,15 +234,15 @@ public class FacebookLikes extends Fragment{
                     JSONArray data = post.getJSONArray("data");
                     for (int j = 0; j < data.length(); j++) {
                         JSONObject current = data.getJSONObject(j);
-                        if (current != null && current.has("caption")) {
-                            String caption = (String) current.get("caption");
-                            if (caption != null && caption.compareTo("youtube.com") == 0) {
+                        if (current != null && current.has("type")) {
+                            String type = (String) current.get("type");
+                            if (type != null && type.compareTo("video") == 0) {
                                 JSONArray actions = current.getJSONArray("actions");
                                 JSONObject linkObject = actions.getJSONObject(1);
                                 videoList.add(new VideoItem(current.getString("name"), linkObject.getString("link")));
                                 videoList.notifyDataSetChanged();
-                                Log.d("JSON", "Name: " + current.getString("name"));
-                                Log.d("JSON", "Link: " + linkObject.getString("link"));
+//                                Log.d("JSON", "Name: " + current.getString("name"));
+//                                Log.d("JSON", "Link: " + linkObject.getString("link"));
                             }
                         }
                     }

@@ -6,11 +6,16 @@
     android:id="@+id/layout_fb">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
         android:id="@+id/txtUserLogeedIn"
         android:layout_gravity="center_horizontal"
-        android:text="@string/text_hello" />
+        android:gravity="center_horizontal"
+        android:maxLines="400"
+        android:scrollHorizontally="false"
+        android:singleLine="false"
+        android:ellipsize="none"
+        android:text="@string/text_hello"
+        android:layout_height="wrap_content" />
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
